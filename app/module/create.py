@@ -20,11 +20,9 @@ def create(request):
         try:
             # Enviem el missatge
             socket.send_json({"name": name, "id": id, "type": type, "module": module})
-            print("Sent request")
             try:
                 # Esperem la resposta
                 message = socket.recv()
-                print("Received reply")
                 if message == "200":
                     return jsonify({"status": 200})
                 else:
