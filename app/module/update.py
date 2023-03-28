@@ -10,8 +10,6 @@ def update(request, moduleId):
     type = data['type']
     module = data['module']
 
-    print(f'{name};{type};{module};PUT;MODULE;{moduleId}')
-
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
 
