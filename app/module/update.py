@@ -3,7 +3,6 @@ import zmq
 
 
 def update(request, moduleId):
-    print("HERE")
     data = request.get_json()
 
     name = data['name']
