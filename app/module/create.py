@@ -19,7 +19,7 @@ def create(request):
 
         try:
             # Enviem el missatge
-            socket.send_json({"name": name, "id": id, "type": type, "module": module})
+            socket.send_json({"Method": "POST", "name": name, "id": id, "type": type, "module": module})
             try:
                 # Esperem la resposta
                 message = socket.recv()
