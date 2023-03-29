@@ -5,10 +5,12 @@ import zmq
 #get the  module
 
 def get(request, moduleId):
-
-    request_json = request.get_json()
-    id = request_json["moduleId"]
-
+    
+    print(request)
+    request = str(request)
+    id = request.split("/")[4]
+    id = id.split("'")[0]
+    print("The final id is: ", id)
 
     # Preparem la connexio amb el worker
     context = zmq.Context()
