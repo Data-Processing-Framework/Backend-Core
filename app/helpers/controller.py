@@ -1,5 +1,9 @@
 from threading import Lock, Thread
 import zmq
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 
 class controllerMeta(type):
@@ -33,34 +37,59 @@ class controllerMeta(type):
             # is already initialized, the thread won't create a new object.
             if cls not in cls._instances:
                 instance = super().__call__(*args, **kwargs)
+                context = zmq.Context.instance()
+                instance.request = context.socket(zmq.PUB)
+                instance.request.bind(os.getenv("request_bus_address"))
+                instance.response = context.socket(zmq.SUB)
+                instance.response.bind(os.getenv("response_bus_address"))
+                instance.response.subscribe("")
+                instance.n_workers = int(os.getenv("n_workers"))
+
                 cls._instances[cls] = instance
         return cls._instances[cls]
 
 
 class controller(metaclass=controllerMeta):
-    value: str = None
-    """
-    We'll use this property to prove that our Singleton really works.
-    """
-
-    def __init__(self) -> None:
-        context = zmq.Context.instance()
-
-        self.out = context.socket(zmq.PUB)
-        self.out.bind("tcp://127.0.0.1:5557")
-        self.response = context.socket(zmq.SUB)
-        self.response.bind("tcp://127.0.0.1:5558")
-        self.response.subscribe("")
+    def poll_workers(self):
+        self.request.send()
 
     def send_message(self, message: str):
-        self.out.send(message.encode("utf-8"))
+        self.request.send_string(message)
+        n_workers = self.n_workers
         poller = zmq.Poller()
         poller.register(self.response, zmq.POLLIN)
-        socket = poller.poll(timeout=10000)
-        for a in socket:
-            response = socket.recv_multipart()
+        while n_workers > 0:
+            try:
+                socket = dict(poller.poll(timeout=1000))
+                if self.response in socket:
+                    yield self.response.recv_string()
+                    n_workers -= 1
+                if socket == {}:
+                    n_workers = 0
+            except zmq.ZMQError as e:
+                yield {}
 
 
-c = controller()
-c.send_message("hola")
-print("a")
+# TODO create tests with this info
+
+
+def test_singleton(instance_name: str) -> None:
+    singleton = controller()
+    for a in singleton.send_message("Funciona!"):
+        print("singleton: " + str(instance_name) + " - " + a)
+
+
+if __name__ == "__main__":
+    # The client code.
+
+    print(
+        "If you see the same value, then singleton was reused (yay!)\n"
+        "If you see different values, "
+        "then 2 singletons were created (booo!!)\n\n"
+        "RESULT:\n"
+    )
+
+    process1 = Thread(target=test_singleton, args=(1,))
+    process2 = Thread(target=test_singleton, args=(2,))
+    process1.start()
+    process2.start()
