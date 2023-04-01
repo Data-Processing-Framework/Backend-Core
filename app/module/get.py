@@ -2,10 +2,11 @@ from module_m import addToList, n_module, getList, createModule
 from flask import jsonify
 import zmq
 
-#get the  module
+# get the  module
 
-def get(request, moduleId):
-    
+
+def get(request, name):
+
     print(request)
     request = str(request)
     id = request.split("/")[4]
@@ -30,7 +31,7 @@ def get(request, moduleId):
                     return jsonify({"status": 200})
                 else:
                     # TODO: Especificar el error
-                    return jsonify( 
+                    return jsonify(
                         {
                             "errors": [
                                 {
@@ -57,7 +58,11 @@ def get(request, moduleId):
             return jsonify(
                 {
                     "errors": [
-                        {"error": "", "message": str(errorSending), "detail": "Send Failed"}
+                        {
+                            "error": "",
+                            "message": str(errorSending),
+                            "detail": "Send Failed",
+                        }
                     ],
                     "code": 400,
                 }
@@ -68,7 +73,11 @@ def get(request, moduleId):
         return jsonify(
             {
                 "errors": [
-                    {"error": "", "message": str(errorConnecting), "detail": "Connection Failed"}
+                    {
+                        "error": "",
+                        "message": str(errorConnecting),
+                        "detail": "Connection Failed",
+                    }
                 ],
                 "code": 400,
             }
