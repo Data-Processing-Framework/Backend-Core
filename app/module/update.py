@@ -2,7 +2,7 @@ from flask import jsonify
 import zmq
 
 
-def update(request, moduleId):
+def update(request, name):
     data = request.get_json()
 
     name = data["name"]
@@ -14,7 +14,7 @@ def update(request, moduleId):
 
     try:
         socket.connect("ipc://backend.ipc")
-        socket.send_string(f"{name};{type};{module};PUT;MODULE;{moduleId}")
+        socket.send_string(f"{name};{type};{module};PUT;MODULE;{name}")
         message = socket.recv()
 
         if message == "200":

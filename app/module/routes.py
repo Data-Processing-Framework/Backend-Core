@@ -7,16 +7,16 @@ def create_route():
     return create.create(request)
 
 
-@bp.route("/<moduleId>", methods=["DELETE"])
-def delete_route(moduleId):
-    return delete.delete(request, moduleId)
+@bp.route("/<name>", methods=["DELETE"])
+def delete_route(name):
+    return delete.delete(request, name)
 
 
-@bp.route("/<moduleId>", methods=["GET"])
-def get_route(moduleId):
-    return get.get(request, moduleId)
+@bp.route("/<name>", methods=["GET"])
+def get_route(name):
+    return get.get(request, name)
 
 
-@bp.route("/<moduleId>", methods=["PUT"])
-def update_route(moduleId):
-    return update.update(request, moduleId)
+@bp.route("/<name>", methods=["PUT"])
+def update_route(name):
+    return update.update(request, name)
