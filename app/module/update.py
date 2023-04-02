@@ -1,18 +1,16 @@
 from flask import jsonify
-from helpers.controller import controller
+from app.helpers.controller import controller
 import zmq
+import json
 
 
 def update(request, name):
     data = request.get_json()
 
-    type = data["type"]
-    module = data["module"]
-
     singleton = controller()
 
     try:
-        for message in singleton.send_message(f"PUT;MODULE;{name};{type};{module}"):
+        for message in singleton.send_message(f"PUT;MODULE;{json.dumps(data)}"):
             if message != "200":
                 raise Exception("")
             
