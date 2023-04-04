@@ -19,7 +19,8 @@ def update(request, name):
                 if mod['name'] == name:
                     index = i
                     if name + '.py' in os.listdir('./app/data/modules'):
-                        with open('./app/data/modules/' + name + '.py', 'w') as file:
+                        os.remove('./app/data/modules/' + name + '.py')
+                        with open('./app/data/modules/' + data['name'] + '.py', 'w') as file:
                             file.write(data['code'])
                     else:
                         raise Exception("Module does not exist")
