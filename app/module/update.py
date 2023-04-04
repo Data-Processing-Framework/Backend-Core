@@ -11,7 +11,10 @@ def update(request, name):
     singleton = controller()
 
     try:
-        with open("./app/data/modules.json", "w+") as module_file:
+        if os.path.getsize('./app/data/modules.json') == 0:
+            raise Exception("File Empty")
+
+        with open('./app/data/modules.json', 'w+') as module_file:
             modules = json.load(module_file)
 
             index = None
