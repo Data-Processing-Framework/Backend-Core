@@ -11,20 +11,22 @@ def update(request, name):
     singleton = controller()
 
     try:
-        if os.path.getsize('./app/data/modules.json') == 0:
+        if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
 
-        with open('./app/data/modules.json', 'w+') as module_file:
+        with open("./app/data/modules.json", "r") as module_file:
             modules = json.load(module_file)
 
             index = None
             for i, mod in enumerate(modules):
-                if mod['name'] == name:
+                if mod["name"] == name:
                     index = i
-                    if name + '.py' in os.listdir('./app/data/modules'):
-                        os.remove('./app/data/modules/' + name + '.py')
-                        with open('./app/data/modules/' + data['name'] + '.py', 'w') as file:
-                            file.write(data['code'])
+                    if name + ".py" in os.listdir("./app/data/modules"):
+                        os.remove("./app/data/modules/" + name + ".py")
+                        with open(
+                            "./app/data/modules/" + data["name"] + ".py", "w"
+                        ) as file:
+                            file.write(data["code"])
                     else:
                         raise Exception("Module does not exist")
                     break
@@ -33,15 +35,14 @@ def update(request, name):
                 modules[index] = data
             else:
                 raise Exception("Module does not exist")
-            
 
-            with open('./app/data/modules.json', 'w') as module_file:
-                json.dump(modules, module_file) 
+            with open("./app/data/modules.json", "w") as module_file:
+                json.dump(modules, module_file)
 
         for message in singleton.send_message("RESTART"):
             if message != "200":
                 raise Exception("")
-            
+
         return jsonify({"status": 200})
     except Exception as e:
         return jsonify(
