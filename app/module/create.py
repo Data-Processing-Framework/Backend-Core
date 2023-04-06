@@ -32,21 +32,49 @@ def create(request):
             f.write(request_json["code"])
 
         # Send a restart message to all the workers
-        for message in singleton.send_message("RESTART"):
-            if message != "200":
-                raise Exception("")
+        message = singleton.send_message("RESTART")
+        if message != "OK":
+            raise Exception(message)
         return jsonify({"status": 200})
 
+    # If an error occurs, return the corresponding error message
     except Exception as e:
-        return jsonify(
-            {
-                "errors": [
-                    {
-                        "error": "Biel no se que posar aqui",
-                        "message": str(e),
-                        "detail": "Crec que hi ha massa parametres per l'error",
-                    }
-                ],
-                "code": 400,
-            }
-        )
+        if str(e) == "Workers could not be restarted":
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Error Worker",
+                            "message": str(e),
+                            "detail": "Try restarting the system",
+                        }
+                    ],
+                    "code": 400,
+                }
+            ), 400
+        elif str(e) == "Module with the same name already exists":
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Error Core",
+                            "message": str(e),
+                            "detail": "Try changing the name of the module",
+                        }
+                    ],
+                    "code": 400,
+                }
+            ), 400
+        else:
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Unknown Error",
+                            "message": str(e),
+                            "detail": "Try again later",
+                        }
+                    ],
+                    "code": 400,
+                }
+            ), 400
