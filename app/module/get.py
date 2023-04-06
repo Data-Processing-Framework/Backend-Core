@@ -1,4 +1,3 @@
-from module_m import addToList, n_module, getList, createModule
 from flask import jsonify
 import zmq
 

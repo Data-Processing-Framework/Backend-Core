@@ -1,7 +1,7 @@
 import json
 import os
 from flask import jsonify
-from app.helpers import controller
+from app.helpers.controller import controller
 
 
 def create(request):
@@ -39,5 +39,14 @@ def create(request):
 
     except Exception as e:
         return jsonify(
-            {"errors": [{"error": "Biel no se que posar aqui", "message": str(e), "detail": "Crec que hi ha massa parametres per l'error"}], "code": 400}
+            {
+                "errors": [
+                    {
+                        "error": "Biel no se que posar aqui",
+                        "message": str(e),
+                        "detail": "Crec que hi ha massa parametres per l'error",
+                    }
+                ],
+                "code": 400,
+            }
         )
