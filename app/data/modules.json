@@ -2,6 +2,6 @@
 	{
 		"name": "MYSQLInput",
 		"type": "Input",
-		"module": "class Module():..."
+		"code": "class Module():\n    def __init__(self):\n       pass"
 	}
 ]

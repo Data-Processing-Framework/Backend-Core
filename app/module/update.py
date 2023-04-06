@@ -1,6 +1,5 @@
 from flask import jsonify
 from app.helpers.controller import controller
-import zmq
 import json
 import os
 
@@ -11,6 +10,9 @@ def update(request, name):
     singleton = controller()
 
     try:
+        if "modules.json" not in os.listdir("./app/data/"):
+            raise Exception("File does not exist")
+
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
 
@@ -39,12 +41,67 @@ def update(request, name):
             with open("./app/data/modules.json", "w") as module_file:
                 json.dump(modules, module_file)
 
-        for message in singleton.send_message("RESTART"):
-            if message != "200":
-                raise Exception("")
+        message = singleton.send_message("RESTART")
 
-        return jsonify({"status": 200})
+        if message == "OK":
+            return jsonify(
+                    {
+                        "status": 200
+                    }
+                ), 200
+        else:
+            raise Exception(message)
+
     except Exception as e:
-        return jsonify(
-            {"errors": [{"error": "", "message": str(e), "detail": ""}], "code": 400}
-        )
+        if str(e) == "File does not exist":
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Core error",
+                            "message": str(e),
+                            "detail": "Please check the file name and location and try again.",
+                        }
+                    ],
+                    "code": 400
+                }
+            ), 400
+        elif str(e) == "File Empty":
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Core error",
+                            "message": str(e),
+                            "detail": "Please create a module before updating it, and then try again.",
+                        }
+                    ],
+                    "code": 400
+                }
+            ), 400
+        elif str(e) == "Module does not exist":
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Core error",
+                            "message": str(e),
+                            "detail": "Please check the module name and try again.",
+                        }
+                    ],
+                    "code": 400
+                }
+            ), 400
+        else:
+            return jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "Core error",
+                            "message": str(e),
+                            "detail": "Please try again.",
+                        }
+                    ],
+                    "code": 400
+                }
+            ), 400
