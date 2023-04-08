@@ -3,24 +3,26 @@ from app.helpers.controller import controller
 import json
 import os
 
+
 def get(request, name):
 
-    data = request.get_json()
+    data = (
+        request.get_json()
+    )  # això et petarà ja que una request de tipo GET no te body, cal utilitzar el paràmetre name
     singleton = controller()
 
     general_modules = False
     new_request = request.split("/")
     if len(new_request) == 5:
-        id=(new_request[-1])
-        
+        id = new_request[-1]
+
     else:
-        general_modules=True
+        general_modules = True
 
-
-    #All modules
+    # All modules
     if general_modules:
         if "modules.json" not in os.listdir("./app/data/"):
-                raise Exception("File does not exist")
+            raise Exception("File does not exist")
 
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
@@ -28,8 +30,8 @@ def get(request, name):
         with open("./app/data/modules.json", "r") as module_file:
             modules = json.load(module_file)
             return modules
-        
-    #Just one module
+
+    # Just one module
     else:
 
         try:
@@ -48,54 +50,66 @@ def get(request, name):
 
         except Exception as e:
             if str(e) == "File does not exist":
-                return jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Core error",
-                                "message": str(e),
-                                "detail": "Please check the file name and location and try again.",
-                            }
-                        ],
-                        "code": 400
-                    }
-                ), 400
+                return (
+                    jsonify(
+                        {
+                            "errors": [
+                                {
+                                    "error": "Core error",
+                                    "message": str(e),
+                                    "detail": "Please check the file name and location and try again.",
+                                }
+                            ],
+                            "code": 400,
+                        }
+                    ),
+                    400,
+                )
             elif str(e) == "File Empty":
-                return jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Core error",
-                                "message": str(e),
-                                "detail": "Please create a module before updating it, and then try again.",
-                            }
-                        ],
-                        "code": 400
-                    }
-                ), 400
+                return (
+                    jsonify(
+                        {
+                            "errors": [
+                                {
+                                    "error": "Core error",
+                                    "message": str(e),
+                                    "detail": "Please create a module before updating it, and then try again.",
+                                }
+                            ],
+                            "code": 400,
+                        }
+                    ),
+                    400,
+                )
             elif str(e) == "Module does not exist":
-                return jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Core error",
-                                "message": str(e),
-                                "detail": "Please check the module name and try again.",
-                            }
-                        ],
-                        "code": 400
-                    }
-                ), 400
+                return (
+                    jsonify(
+                        {
+                            "errors": [
+                                {
+                                    "error": "Core error",
+                                    "message": str(e),
+                                    "detail": "Please check the module name and try again.",
+                                }
+                            ],
+                            "code": 400,
+                        }
+                    ),
+                    400,
+                )
             else:
-                return jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Core error",
-                                "message": str(e),
-                                "detail": "Please try again.",
-                            }
-                        ],
-                        "code": 400
-                    }
-                ), 400
+                return (
+                    jsonify(
+                        {
+                            "errors": [
+                                {
+                                    "error": "Core error",
+                                    "message": str(e),
+                                    "detail": "Please try again.",
+                                }
+                            ],
+                            "code": 400,
+                        }
+                    ),
+                    400,
+                )
