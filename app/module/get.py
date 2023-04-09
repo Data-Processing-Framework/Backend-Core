@@ -29,8 +29,6 @@ def get(request, name):
 
             with open("./app/data/modules.json", "r") as module_file:
                 modules = json.load(module_file)
-
-            modules = modules["modules"]
             for mod in modules:
                 if mod["name"] == name:
                     return mod
