@@ -1,9 +1,6 @@
 from threading import Lock, Thread
 import zmq
-from dotenv import load_dotenv
 import os
-
-load_dotenv()
 
 
 class controllerMeta(type):
@@ -39,11 +36,15 @@ class controllerMeta(type):
                 instance = super().__call__(*args, **kwargs)
                 context = zmq.Context.instance()
                 instance.request = context.socket(zmq.PUB)
-                instance.request.bind(os.getenv("request_bus_address"))
+                instance.request.bind(
+                    "tcp://127.0.0.1:" + os.getenv("CONTROLLER_REQUEST_PORT")
+                )
                 instance.response = context.socket(zmq.SUB)
-                instance.response.bind(os.getenv("response_bus_address"))
+                instance.response.bind(
+                    "tcp://127.0.0.1:" + os.getenv("CONTROLLER_RESPONSE_PORT")
+                )
                 instance.response.subscribe("")
-                instance.n_workers = int(os.getenv("n_workers"))
+                instance.n_workers = int(os.getenv("N_WORKERS"))
 
                 cls._instances[cls] = instance
         return cls._instances[cls]
