@@ -17,6 +17,11 @@ def get_route(name):
     return get.get(request, name)
 
 
+@bp.route("/", methods=["GET"])
+def get_route_all():
+    return get.get(request, "")
+
+
 @bp.route("/<name>", methods=["PUT"])
 def update_route(name):
     return update.update(request, name)

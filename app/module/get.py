@@ -1,83 +1,102 @@
 from flask import jsonify
-import zmq
-
-# get the  module
+import json
+import os
 
 
 def get(request, name):
 
-    print(request)
-    request = str(request)
-    id = request.split("/")[4]
-    id = id.split("'")[0]
-    print("The final id is: ", id)
-
-    # Preparem la connexio amb el worker
-    context = zmq.Context()
-    socket = context.socket(zmq.REQ)
-
+    # All modules
     try:
-        # Ens connectem al worker
-        socket.connect("ipc://backend.ipc")  # TODO: No sabem la adreça de connexio
+        if len(name) == 0:
+            if "modules.json" not in os.listdir("./app/data/"):
+                raise Exception("File does not exist")
 
-        try:
-            # Enviem el missatge
-            socket.send_json({"id": id})
-            try:
-                # Esperem la resposta
-                message = socket.recv()
-                if message == "200":
-                    return jsonify({"status": 200})
-                else:
-                    # TODO: Especificar el error
-                    return jsonify(
-                        {
-                            "errors": [
-                                {
-                                    "error": "",
-                                    "message": "Get Failed",
-                                    "detail": " ",
-                                }
-                            ],
-                            "code": 400,
-                        }
-                    )
-            except Exception as e:
-                # TODO: Especificar el error
-                return jsonify(
+            if os.path.getsize("./app/data/modules.json") == 0:
+                raise Exception("File Empty")
+
+            with open("./app/data/modules.json", "r") as module_file:
+                modules = json.load(module_file)
+                return modules
+
+        # Just one module
+        else:
+
+            if "modules.json" not in os.listdir("./app/data/"):
+                raise Exception("File does not exist")
+
+            if os.path.getsize("./app/data/modules.json") == 0:
+                raise Exception("File Empty")
+
+            with open("./app/data/modules.json", "r") as module_file:
+                modules = json.load(module_file)
+
+            modules = modules["modules"]
+            for mod in modules:
+                if mod["name"] == name:
+                    return mod
+
+    except Exception as e:
+        if str(e) == "File does not exist":
+            return (
+                jsonify(
                     {
                         "errors": [
-                            {"error": "", "message": str(e), "detail": "Receive Failed"}
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please check the file name and location and try again.",
+                            }
                         ],
                         "code": 400,
                     }
-                )
-        except Exception as errorSending:
-            # TODO: Especificar el error
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "",
-                            "message": str(errorSending),
-                            "detail": "Send Failed",
-                        }
-                    ],
-                    "code": 400,
-                }
+                ),
+                400,
             )
-
-    except Exception as errorConnecting:
-        # TODO: Especificar el error
-        return jsonify(
-            {
-                "errors": [
+        elif str(e) == "File Empty":
+            return (
+                jsonify(
                     {
-                        "error": "",
-                        "message": str(errorConnecting),
-                        "detail": "Connection Failed",
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please create a module before updating it, and then try again.",
+                            }
+                        ],
+                        "code": 400,
                     }
-                ],
-                "code": 400,
-            }
-        )
+                ),
+                400,
+            )
+        elif str(e) == "Module does not exist":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please check the module name and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
+        else:
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
