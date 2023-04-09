@@ -6,19 +6,10 @@ import os
 
 def get(request, name):
 
-    data = (
-        request.get_json()
-    )  # això et petarà ja que una request de tipo GET no te body, cal utilitzar el paràmetre name
-    singleton = controller()
-
-    general_modules = False
-    new_request = request.split("/")
-    if len(new_request) == 5:
-        id = new_request[-1]
-
-    else:
+    if len(name) == 0:
         general_modules = True
-
+    else:
+        general_modules = False
     # All modules
     if general_modules:
         if "modules.json" not in os.listdir("./app/data/"):
@@ -44,10 +35,11 @@ def get(request, name):
 
             with open("./app/data/modules.json", "r") as module_file:
                 modules = json.load(module_file)
-                for mod in modules:
-                    if mod["id"] == id:
-                        return mod
-
+            
+            modules = modules["modules"]
+            for mod in modules:
+                if mod["name"] == name:
+                    return mod
         except Exception as e:
             if str(e) == "File does not exist":
                 return (
