@@ -43,65 +43,73 @@ def update(request, name):
 
         message = singleton.send_message("RESTART")
 
-        if message == "OK":
-            return jsonify(
-                    {
-                        "status": 200
-                    }
-                ), 200
+        if message["code"] == 200:
+            return jsonify(message), 200
         else:
-            raise Exception(message)
+            return jsonify(message), 400
 
     except Exception as e:
         if str(e) == "File does not exist":
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Core error",
-                            "message": str(e),
-                            "detail": "Please check the file name and location and try again.",
-                        }
-                    ],
-                    "code": 400
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please check the file name and location and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
         elif str(e) == "File Empty":
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Core error",
-                            "message": str(e),
-                            "detail": "Please create a module before updating it, and then try again.",
-                        }
-                    ],
-                    "code": 400
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please create a module before updating it, and then try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
         elif str(e) == "Module does not exist":
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Core error",
-                            "message": str(e),
-                            "detail": "Please check the module name and try again.",
-                        }
-                    ],
-                    "code": 400
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please check the module name and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
         else:
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Core error",
-                            "message": str(e),
-                            "detail": "Please try again.",
-                        }
-                    ],
-                    "code": 400
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )

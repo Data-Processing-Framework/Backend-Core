@@ -58,16 +58,39 @@ class controller(metaclass=controllerMeta):
         n_workers = self.n_workers
         poller = zmq.Poller()
         poller.register(self.response, zmq.POLLIN)
+        errors = []
         while n_workers > 0:
             try:
                 socket = dict(poller.poll(timeout=1000))
                 if self.response in socket:
-                    yield self.response.recv_string()
+                    res = self.response.recv_string()
+                    if res != "OK":
+                        errors.append(res)
                     n_workers -= 1
                 if socket == {}:
                     n_workers = 0
+                    errors.append(
+                        {
+                            "error": "Core error",
+                            "message": "Couldn't connect to all workers.",
+                            "detail": "Please restart all containers and try again.",
+                        }
+                    )
             except zmq.ZMQError as e:
-                yield {}
+                {
+                    "errors": [
+                        {
+                            "error": "Core error",
+                            "message": str(e),
+                            "detail": "Please restart the system and try again.",
+                        }
+                    ],
+                    "code": 400,
+                }
+        if errors:
+            return {"errors": errors, "code": 400}
+        else:
+            return {"code": 200}
 
 
 # TODO create tests with this info
