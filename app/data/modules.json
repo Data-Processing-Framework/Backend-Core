@@ -1,0 +1,12 @@
+[
+	{
+		"name": "MYSQLInput",
+		"type": "Input",
+		"code": "class Module():\n    def __init__(self):\n       pass"
+	},
+	{
+		"name": "MYSQLOutput",
+		"type": "Output",
+		"code": "class Module():\n    def __init__(self):\n       pass"
+	}
+]
