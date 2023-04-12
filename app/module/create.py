@@ -14,7 +14,8 @@ def create(request):
     try:
          # If the modules.json file does not exist, raise an exception
         if "modules.json" not in os.listdir("./app/data/"):
-            raise Exception("File does not exist")
+            with open("./app/data/modules.json", "w") as f:
+                json.dump([], f)
         # Check if the modules.json file is empty
         if os.path.getsize("./app/data/modules.json") == 0:
             with open("./app/data/modules.json", "w") as f:
