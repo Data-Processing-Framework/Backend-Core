@@ -37,11 +37,11 @@ class controllerMeta(type):
                 context = zmq.Context.instance()
                 instance.request = context.socket(zmq.PUB)
                 instance.request.bind(
-                    "tcp://127.0.0.1:" + os.getenv("CONTROLLER_REQUEST_PORT")
+                    "tcp://0.0.0.0:" + os.getenv("CONTROLLER_REQUEST_PORT")
                 )
                 instance.response = context.socket(zmq.SUB)
                 instance.response.bind(
-                    "tcp://127.0.0.1:" + os.getenv("CONTROLLER_RESPONSE_PORT")
+                    "tcp://0.0.0.0:" + os.getenv("CONTROLLER_RESPONSE_PORT")
                 )
                 instance.response.subscribe("")
                 instance.n_workers = int(os.getenv("N_WORKERS"))
