@@ -1,48 +1,34 @@
 from flask import jsonify
+from app.helpers.controller import controller
+import json
+import os
 import zmq
 
 
 def delete(request, name):
-
+    
+    data = request.get_json()
+    name = data["name"]
     context = zmq.Context()
     socket = context.socket(zmq.REQ)
+    if "modules.json" not in os.listdir("./app/data/"):
+            raise Exception("File does not exist")
 
-    try:
-        socket.connect("ipc://backend.ipc")
+    if os.path.getsize("./app/data/modules.json") == 0:
+        raise Exception("File Empty")
 
-        try:
-            socket.send_string(f"DELETE;MODULE;{name}")
+    with open("./app/data/modules.json", "r") as module_file:
+        modules = json.load(module_file)
+    modules = modules["modules"]
 
-            try:
-                message = socket.recv()
+    for module in modules:
+        if module["name"] == name:
+             module.pop(module)
+        
 
-                if message == "200":
-                    return jsonify({"status": 200})
-                else:
-                    return jsonify(
-                        {
-                            "errors": [{"error": "", "message": "", "detail": ""}],
-                            "code": 400,
-                        }
-                    )
-
-            except Exception as e:
-                return jsonify(
-                    {
-                        "errors": [{"error": "", "message": str(e), "detail": ""}],
-                        "code": 400,
-                    }
-                )
-
-        except Exception as e:
-            return jsonify(
-                {
-                    "errors": [{"error": "", "message": str(e), "detail": ""}],
-                    "code": 400,
-                }
-            )
-
-    except Exception as e:
-        return jsonify(
-            {"errors": [{"error": "", "message": str(e), "detail": ""}], "code": 400}
-        )
+    print(module)
+    with open('./app/data/modules.json', 'w') as module_file:
+        module_file.write('')
+        module_file.close()
+    with open("./app/data/modules.json", "r") as module_file:
+        json.dump(module_file)
