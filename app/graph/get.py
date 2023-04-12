@@ -12,5 +12,5 @@ def get(request):
                 graph = json.load(graph_file)
                 return jsonify(graph), 200
     except Exception as e:
-        return jsonify({"errors": [{"error": "Core error", "message": str(e), "detail": "PGraph does not exist, try adding a node"}], "code": 400}), 400
+        return jsonify({"errors": [{"error": "Core error", "message": str(e), "detail": "Graph does not exist, try adding a node"}], "code": 400}), 400
     
