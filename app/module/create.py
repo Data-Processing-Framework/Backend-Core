@@ -40,9 +40,10 @@ def create(request):
 
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
-        if message != "200":
-            raise Exception(message)
-        return jsonify({"status": 200})
+        if message["code"] == 200:
+            return jsonify(message), 200
+        else:
+            return jsonify(message), 400
 
     # If an error occurs, return the corresponding error message
     except Exception as e:
