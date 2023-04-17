@@ -5,29 +5,24 @@ import os
 
 
 def delete(requests, name):
-    
-    singleton = controller()
 
     try:
+        singleton = controller()
         if "modules.json" not in os.listdir("./app/data/"):
-                raise Exception("File does not exist")
+            raise Exception("File does not exist")
 
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
 
         with open("./app/data/modules.json", "r") as module_file:
             modules = json.load(module_file)
-            found = False
 
             for module in modules:
                 if module["name"] == name:
                     modules.remove(module)
-                    found = True
+                    with open("./app/data/modules.json", "w") as module_file:
+                        json.dump(modules, module_file)
                     break
-
-            if found:
-                with open('./app/data/modules.json', 'w') as module_file:
-                    json.dump(modules, module_file)
 
             if name + ".py" in os.listdir("./app/data/modules"):
                 os.remove("./app/data/modules/" + name + ".py")
@@ -105,4 +100,3 @@ def delete(requests, name):
                 ),
                 400,
             )
-
