@@ -6,9 +6,9 @@ def restart(request):
     try:
         Answer = Controll.send_message("RESTART")
         if Answer["code"] == 400:
-              return jsonify(Answer), 400
+            return jsonify(Answer), 400
         else:
-             return jsonify(Answer), 200
+            return jsonify(Answer), 200
         
     except Exception as e:
         return (
