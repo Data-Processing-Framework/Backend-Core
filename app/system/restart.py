@@ -10,7 +10,6 @@ def restart(request):
             return jsonify(Answer), 400
         else:
             return jsonify(Answer), 200
-
     except Exception as e:
         return (
             jsonify(
