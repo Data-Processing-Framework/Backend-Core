@@ -1,5 +1,6 @@
 from flask import jsonify
-
+from app.helpers.controller import controller
 
 def restart(request):
-    return jsonify({"status": 200})  # Exemple de resposta
+    Answer = controller.send_message(restart)
+    return jsonify(Answer)  # Exemple de resposta
