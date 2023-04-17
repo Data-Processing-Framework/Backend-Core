@@ -5,16 +5,20 @@ def restart(request):
     Controll = controller()
     try:
         Answer = Controll.send_message("RESTART")
-        return jsonify(Answer)  # Exemple de resposta
+        if Answer["code"] == 400:
+              return jsonify(Answer), 400
+        else:
+             return jsonify(Answer), 200
+        
     except Exception as e:
         return (
                 jsonify(
                     {
                         "errors": [
                             {
-                                "error": "Type of error",
-                                "message": "Error message",
-                                "detail": "Restart fail"
+                                "error": "Restart fail",
+                                "message": str(e),
+                                "detail": "stop the computer and open the computer again"
                             }
                         ],
                         "code": 400
