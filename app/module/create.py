@@ -6,13 +6,11 @@ from app.helpers.controller import controller
 
 def create(request):
 
-   
-
     # Get the request json data and create a singleton instance of the controller
     request_json = request.get_json()
     singleton = controller()
     try:
-         # If the modules.json file does not exist, raise an exception
+        # If the modules.json file does not exist, raise an exception
         if "modules.json" not in os.listdir("./app/data/"):
             with open("./app/data/modules.json", "w") as f:
                 json.dump([], f)
@@ -41,47 +39,56 @@ def create(request):
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
         if message != "200":
-            raise Exception(message)
+            return message, 400
         return jsonify({"status": 200})
 
     # If an error occurs, return the corresponding error message
     except Exception as e:
         if str(e) == "Workers could not be restarted":
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Error Worker",
-                            "message": str(e),
-                            "detail": "Try restarting the system",
-                        }
-                    ],
-                    "code": 400,
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error Worker",
+                                "message": str(e),
+                                "detail": "Try restarting the system",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
         elif str(e) == "Module with the same name already exists":
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Error Core",
-                            "message": str(e),
-                            "detail": "Try changing the name of the module",
-                        }
-                    ],
-                    "code": 400,
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error Core",
+                                "message": str(e),
+                                "detail": "Try changing the name of the module",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
         else:
-            return jsonify(
-                {
-                    "errors": [
-                        {
-                            "error": "Unknown Error",
-                            "message": str(e),
-                            "detail": "Try again later",
-                        }
-                    ],
-                    "code": 400,
-                }
-            ), 400
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Unknown Error",
+                                "message": str(e),
+                                "detail": "Try again later",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
