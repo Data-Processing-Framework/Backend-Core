@@ -12,9 +12,9 @@ def stop(request):
         resposta = controlador.send_message("STOP")
 
         if resposta["code"] == 200:
-            return jsonify({"status": 200})
+            return jsonify(resposta), 200
         else:
-            return resposta, 400
+            return jsonify(resposta), 400
 
     except Exception as e:
         return (
