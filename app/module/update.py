@@ -5,11 +5,11 @@ import os
 
 
 def update(request, name):
-    data = request.get_json()
-
-    singleton = controller()
-
     try:
+        data = request.get_json()
+
+        singleton = controller()
+
         if "modules.json" not in os.listdir("./app/data/"):
             raise Exception("File does not exist")
 
