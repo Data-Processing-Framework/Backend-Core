@@ -1,40 +1,36 @@
-import json
 import os
+
 from flask import jsonify
+
 from app.helpers.controller import controller
+from app.helpers.file_locker import block_read, block_write
 
 
-def create(request):
+def create(request, lock):
 
-    # Get the request json data and create a singleton instance of the controller
-    request_json = request.get_json()
-    singleton = controller()
     try:
-        # If the modules.json file does not exist, raise an exception
-        if "modules.json" not in os.listdir("./app/data/"):
-            with open("./app/data/modules.json", "w") as f:
-                json.dump([], f)
+        # Get the request json data and create a singleton instance of the controller
+        request_json = request.get_json()
+        singleton = controller()
+
         # Check if the modules.json file is empty
         if os.path.getsize("./app/data/modules.json") == 0:
-            with open("./app/data/modules.json", "w") as f:
-                json.dump([request_json], f)
+            block_write("./app/data/modules.json", [request_json])
         else:
-            with open("./app/data/modules.json", "r") as f:
-                modules = json.load(f)
+            # Get all the modules from the modules.json file
+            modules = block_read("./app/data/modules.json")
 
             # Check if the module already exists in the modules.json file
             for m in modules:
                 if m["name"] == request_json["name"]:
                     raise Exception("Module with the same name already exists")
 
-            # Add the module to the modules.json file and create a new file for the code of the module.
+            # Add the module to the modules.json file
             modules.append(request_json)
-            with open("./app/data/modules.json", "w") as f:
-                json.dump(modules, f)
-        # Create a new file for the code of the module.
-        # If the python file for some unknown reason already exists, it will be overwritten.
-        with open("./app/data/modules/" + request_json["name"] + ".py", "w") as f:
-            f.write(request_json["code"])
+            block_write("./app/data/modules.json", modules)
+
+        # Create a new file (or overwrite) for the code of the module.
+        block_write("./app/data/modules/" + request_json["name"] + ".py", request_json["code"])
 
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
@@ -83,9 +79,9 @@ def create(request):
                     {
                         "errors": [
                             {
-                                "error": "Unknown Error",
+                                "error": "Unexpected Error",
                                 "message": str(e),
-                                "detail": "Try again later",
+                                "detail": "Try again later or contact support for assistance",
                             }
                         ],
                         "code": 400,

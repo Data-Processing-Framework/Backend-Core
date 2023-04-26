@@ -1,5 +1,6 @@
-from app.graph import bp, create, get, update
 from flask import request
+
+from app.graph import bp, create, get, update
 
 
 @bp.route("/", methods=["POST"])
@@ -14,6 +15,4 @@ def get_route():
 
 @bp.route("/", methods=["PUT"])
 def update_route():
-    return update.update(
-        request,
-    )
+    return update.update(request)

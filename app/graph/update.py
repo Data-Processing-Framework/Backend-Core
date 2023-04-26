@@ -1,22 +1,21 @@
-from app.helpers.controller import controller
-from flask import jsonify
-import json
 import os
+
+from flask import jsonify
+
+from app.helpers.controller import controller
+from app.helpers.file_locker import block_write
+
 
 
 def update(request):
     try:
         data = request.get_json()
         singleton = controller()
-
-        if "graph.json" not in os.listdir("./app/data/"):
-            raise Exception("File does not exist")
         
         if os.path.getsize("./app/data/graph.json") == 0:
             raise Exception("File Empty")
         
-        with open("./app/data/graph.json", "w") as graph_file:
-            json.dump(data, graph_file)
+        block_write("./app/data/graph.json", data)
 
         message = singleton.send_message("RESTART")
 
@@ -26,23 +25,7 @@ def update(request):
             return jsonify(message), 400
 
     except Exception as e:
-        if str(e) == "File does not exist":
-            return (
-                jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Core error",
-                                "message": str(e),
-                                "detail": "Please check the file name and location and try again.",
-                            }
-                        ],
-                        "code": 400,
-                    }
-                ),
-                400,
-            )
-        elif str(e) == "File Empty":
+        if str(e) == "File Empty":
             return (
                 jsonify(
                     {
