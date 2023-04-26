@@ -5,10 +5,15 @@ from app.helpers.controller import controller
 
 
 def create(request):
+
     # Get the request json data and create a singleton instance of the controller
     request_json = request.get_json()
     singleton = controller()
     try:
+        # If the modules.json file does not exist, raise an exception
+        if "modules.json" not in os.listdir("./app/data/"):
+            with open("./app/data/modules.json", "w") as f:
+                json.dump([], f)
         # Check if the modules.json file is empty
         if os.path.getsize("./app/data/modules.json") == 0:
             with open("./app/data/modules.json", "w") as f:
@@ -33,7 +38,6 @@ def create(request):
 
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
-
         if message["code"] == 200:
             return jsonify(message), 200
         else:
