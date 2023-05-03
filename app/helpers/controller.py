@@ -44,7 +44,7 @@ class controllerMeta(type):
                     "tcp://0.0.0.0:" + os.getenv("CONTROLLER_RESPONSE_PORT")
                 )
                 instance.response.subscribe("")
-                instance.n_workers = int(os.getenv("N_WORKERS"))
+                instance.n_workers = int(os.getenv("N_WORKERS")) + 1
 
                 cls._instances[cls] = instance
         return cls._instances[cls]
