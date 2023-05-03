@@ -19,7 +19,7 @@ app = create_app()
 controller()
 
 if __name__ == "__main__":
-    if os.getenv("DEV") == "1":
+    if os.getenv("DEBUG") == "1":
         import time
 
         while True:
