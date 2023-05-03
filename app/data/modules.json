@@ -1,1 +1,8 @@
-{}
+[
+    {
+        "name": "Julio",
+        "type": "input",
+        "module": "a",
+        "code": "hola"
+    }
+]

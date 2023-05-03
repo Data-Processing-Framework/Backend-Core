@@ -3,7 +3,7 @@ import os
 from flask import jsonify
 
 from app.helpers.controller import controller
-from app.helpers.file_locker import block_read, block_write, block_delete
+from app.helpers.file_locker import block_read, block_write, block_delete, block_write_file
 
 
 def update(request, name):
@@ -22,7 +22,7 @@ def update(request, name):
                 index = i
                 if name + ".py" in os.listdir("./app/data/modules"):
                     block_delete("./app/data/modules/" + name + ".py")
-                    block_write("./app/data/modules/" + data["name"] + ".py", data["code"])
+                    block_write_file("./app/data/modules/" + data["name"] + ".py", data["code"])
                 else:
                     raise Exception("Module does not exist")
                 break

@@ -3,23 +3,24 @@ import os
 from flask import jsonify
 
 from app.helpers.controller import controller
-from app.helpers.file_locker import block_read, block_write
+from app.helpers.file_locker import block_read, block_write, block_write_file
 
 
-def create(request, lock):
+def create(request):
 
     try:
         # Get the request json data and create a singleton instance of the controller
         request_json = request.get_json()
         singleton = controller()
-
         # Check if the modules.json file is empty
         if os.path.getsize("./app/data/modules.json") == 0:
+            print("Modules file is empty")
             block_write("./app/data/modules.json", [request_json])
         else:
             # Get all the modules from the modules.json file
+            print("Modules file is not empty")
             modules = block_read("./app/data/modules.json")
-
+            print(modules)
             # Check if the module already exists in the modules.json file
             for m in modules:
                 if m["name"] == request_json["name"]:
@@ -30,7 +31,7 @@ def create(request, lock):
             block_write("./app/data/modules.json", modules)
 
         # Create a new file (or overwrite) for the code of the module.
-        block_write("./app/data/modules/" + request_json["name"] + ".py", request_json["code"])
+        block_write_file("./app/data/modules/" + request_json["name"] + ".py", request_json["code"])
 
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
