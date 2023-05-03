@@ -3,13 +3,31 @@ import os
 from flask import jsonify
 from app.helpers.controller import controller
 
+required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+
+class MissingFieldException(Exception):
+    pass
+
+def validate_json(json_data):
+    try:
+        data = json.loads(json_data)
+    except ValueError:
+        raise MissingFieldException("Al JSON le faltan campos")
+
+    for field in required_fields:
+        if field not in data or not data[field]:
+            raise MissingFieldException(f"Falta el campo '{field}' en el JSON")
+
+    return True
 
 def create(request):
 
     # Get the request json data and create a singleton instance of the controller
     request_json = request.get_json()
     singleton = controller()
+
     try:
+        validate_json(request_json)
         # If the modules.json file does not exist, raise an exception
         if "modules.json" not in os.listdir("./app/data/"):
             with open("./app/data/modules.json", "w") as f:
@@ -44,6 +62,23 @@ def create(request):
             return jsonify(message), 400
 
     # If an error occurs, return the corresponding error message
+    except MissingFieldException as e:
+        if str(e) == f"The field '{e}' is missing from the JSON":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error User",
+                                "message": str(e),
+                                "detail": "Fill the empty field",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
     except Exception as e:
         if str(e) == "Workers could not be restarted":
             return (

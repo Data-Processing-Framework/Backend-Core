@@ -3,12 +3,30 @@ from app.helpers.controller import controller
 import json
 import os
 
+required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+
+class MissingFieldException(Exception):
+    pass
+
+def validate_json(json_data):
+    try:
+        data = json.loads(json_data)
+    except ValueError:
+        raise MissingFieldException("Al JSON le faltan campos")
+
+    for field in required_fields:
+        if field not in data or not data[field]:
+            raise MissingFieldException(f"Falta el campo '{field}' en el JSON")
+
+    return True
 
 def update(request, name):
     try:
         data = request.get_json()
 
         singleton = controller()
+
+        validate_json(data)
 
         if "modules.json" not in os.listdir("./app/data/"):
             raise Exception("File does not exist")
@@ -48,6 +66,24 @@ def update(request, name):
         else:
             return jsonify(message), 400
 
+    except MissingFieldException as e:
+        if str(e) == f"The field '{e}' is missing from the JSON":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error User",
+                                "message": str(e),
+                                "detail": "Fill the empty field",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
+        
     except Exception as e:
         if str(e) == "File does not exist":
             return (
