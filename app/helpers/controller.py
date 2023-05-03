@@ -78,16 +78,18 @@ class controller(metaclass=controllerMeta):
                         }
                     )
             except zmq.ZMQError as e:
-                {
-                    "errors": [
-                        {
-                            "error": "Core error",
-                            "message": str(e),
-                            "detail": "Please restart the system and try again.",
-                        }
-                    ],
-                    "code": 400,
-                }
+                errors.append(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please restart the system and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                )
         if errors:
             return {"errors": errors, "code": 400}
         else:
