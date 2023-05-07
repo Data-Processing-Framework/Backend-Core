@@ -30,6 +30,8 @@ def get(request, name):
             for mod in modules:
                 if mod["name"] == name:
                     return mod
+                
+            raise Exception("Module does not exist")
 
     except Exception as e:
         if str(e) == "File Empty":
