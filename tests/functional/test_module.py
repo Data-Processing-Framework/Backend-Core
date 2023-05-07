@@ -47,7 +47,7 @@ def test_module_post(client, route, json, file_name, path, expected):
 ])
 def test_module_delete(client, route, json, file_name, path, expected, extra):
     if extra:
-        remove_size()
+        remove_size("modules.json")
 
     response = client.delete(route, json=json)
     assert response.status_code == expected[0] # Provisional 400 -> 200
@@ -55,7 +55,7 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
     assert response.json["errors"][0]["message"] == expected[2]
 
     if extra:
-        return_size()
+        return_size("modules.json")
     time.sleep(2)
 
 
@@ -81,7 +81,7 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
 ])
 def test_module_put(client, route, json, file_name, path, expected, error, extra):
     if extra:
-        remove_size()
+        remove_size("modules.json")
 
     response = client.put(route, json=json)
     assert response.status_code == expected[0] # Provisional 400 -> 200
@@ -90,7 +90,7 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
         assert response.json["errors"][0]["message"] == expected[2]
 
     if extra:
-        return_size()
+        return_size("modules.json")
     time.sleep(2)
 
 
@@ -116,7 +116,7 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 ])
 def test_module_get(client, route, json, file_name, path, expected, error, extra):
     if extra:
-        remove_size()
+        remove_size("modules.json")
 
     response = client.get(route)
     assert response.status_code == expected[0] # Provisional 400 -> 200
@@ -127,5 +127,5 @@ def test_module_get(client, route, json, file_name, path, expected, error, extra
         assert response.json == json
 
     if extra:
-        return_size()
+        return_size("modules.json")
     time.sleep(2)
