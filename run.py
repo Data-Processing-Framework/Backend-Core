@@ -19,10 +19,4 @@ app = create_app()
 controller()
 
 if __name__ == "__main__":
-    if os.getenv("DEBUG") == "1":
-        import time
-
-        while True:
-            time.sleep(10)
-    else:
-        app.run(debug=True)
+    app.run(debug=True)
