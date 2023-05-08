@@ -44,7 +44,7 @@ class controllerMeta(type):
                     "tcp://0.0.0.0:" + os.getenv("CONTROLLER_RESPONSE_PORT")
                 )
                 instance.response.subscribe("")
-                instance.n_workers = int(os.getenv("N_WORKERS"))
+                instance.n_workers = int(os.getenv("N_WORKERS")) + 1
 
                 cls._instances[cls] = instance
         return cls._instances[cls]
@@ -78,16 +78,18 @@ class controller(metaclass=controllerMeta):
                         }
                     )
             except zmq.ZMQError as e:
-                {
-                    "errors": [
-                        {
-                            "error": "Core error",
-                            "message": str(e),
-                            "detail": "Please restart the system and try again.",
-                        }
-                    ],
-                    "code": 400,
-                }
+                errors.append(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please restart the system and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                )
         if errors:
             return {"errors": errors, "code": 400}
         else:

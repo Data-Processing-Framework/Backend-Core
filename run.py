@@ -1,5 +1,6 @@
 from app import create_app
 from dotenv import load_dotenv
+from app.helpers.controller import controller
 import os
 
 if not os.path.exists("./app/data/modules"):
@@ -15,6 +16,13 @@ load_dotenv()
 
 app = create_app()
 
+controller()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    if os.getenv("DEBUG") == "1":
+        import time
+
+        while True:
+            time.sleep(10)
+    else:
+        app.run(debug=True)
