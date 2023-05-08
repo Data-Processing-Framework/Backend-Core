@@ -5,20 +5,17 @@ from app.helpers.controller import controller
 
 required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
 
+
 class MissingFieldException(Exception):
     pass
 
+
 def validate_json(json_data):
-    try:
-        data = json.loads(json_data)
-    except ValueError:
-        raise MissingFieldException("Al JSON le faltan campos")
 
     for field in required_fields:
-        if field not in data or not data[field]:
-            raise MissingFieldException(f"Falta el campo '{field}' en el JSON")
+        if field not in json_data or not json_data[field]:
+            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
-    return True
 
 def create(request):
 
@@ -63,22 +60,21 @@ def create(request):
 
     # If an error occurs, return the corresponding error message
     except MissingFieldException as e:
-        if str(e) == f"The field '{e}' is missing from the JSON":
-            return (
-                jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Error User",
-                                "message": str(e),
-                                "detail": "Fill the empty field",
-                            }
-                        ],
-                        "code": 400,
-                    }
-                ),
-                400,
-            )
+        return (
+            jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "User error",
+                            "message": str(e),
+                            "detail": "Fill the empty field",
+                        }
+                    ],
+                    "code": 400,
+                }
+            ),
+            400,
+        )
     except Exception as e:
         if str(e) == "Workers could not be restarted":
             return (
