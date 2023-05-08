@@ -62,7 +62,7 @@ class controller(metaclass=controllerMeta):
         errors = []
         while n_workers > 0:
             try:
-                socket = dict(poller.poll(timeout=1000))
+                socket = dict(poller.poll(timeout=10000))
                 if self.response in socket:
                     res = self.response.recv_string()
                     if res != "OK":
