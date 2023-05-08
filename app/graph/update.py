@@ -3,7 +3,7 @@ from flask import jsonify
 import json
 import os
 
-required_fields = ["name", "type", "module", "inputs", "postion"]
+required_fields = ["name", "type", "module", "inputs", "position"]
 
 
 class MissingFieldException(Exception):
@@ -13,8 +13,11 @@ class MissingFieldException(Exception):
 def validate_json(json_data):
 
     for field in required_fields:
-        if field not in json_data or not json_data[field]:
-            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
+        for node in json_data:
+            if field not in node:
+                raise MissingFieldException(
+                    f"The field '{field}' is missing from the JSON"
+                )
 
 
 def update(request):

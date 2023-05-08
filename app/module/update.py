@@ -13,7 +13,7 @@ class MissingFieldException(Exception):
 def validate_json(json_data):
 
     for field in required_fields:
-        if field not in json_data or not json_data[field]:
+        if field not in json_data:
             raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
 
