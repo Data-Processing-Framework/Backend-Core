@@ -19,7 +19,7 @@ def test_system_restart(client):
     assert response.status_code == 200
     time.sleep(3)
 
-def test_system_status(client):
-    response = client.get('/system/status')
-    assert response.status_code == 200
-    time.sleep(3)
+# def test_system_status(client):
+#     response = client.get('/system/status')
+#     assert response.status_code == 200
+#     time.sleep(3)

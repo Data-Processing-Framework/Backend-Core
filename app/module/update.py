@@ -6,10 +6,26 @@ from app.helpers.controller import controller
 from app.helpers.file_locker import block_read, block_write, block_delete, block_write_file
 
 
+required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+
+
+class MissingFieldException(Exception):
+    pass
+
+
+def validate_json(json_data):
+
+    for field in required_fields:
+        if field not in json_data:
+            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
+
+
 def update(request, name):
     try:
         data = request.get_json()
         singleton = controller()
+
+        validate_json(data)
 
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
@@ -40,8 +56,41 @@ def update(request, name):
         else:
             return jsonify(message), 400
 
+    except MissingFieldException as e:
+        return (
+            jsonify(
+                {
+                    "errors": [
+                        {
+                            "error": "User error",
+                            "message": str(e),
+                            "detail": "Fill the empty field",
+                        }
+                    ],
+                    "code": 400,
+                }
+            ),
+            400,
+        )
+
     except Exception as e:
-        if str(e) == "File Empty":
+        if str(e) == "File does not exist":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Core error",
+                                "message": str(e),
+                                "detail": "Please check the file name and location and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
+        elif str(e) == "File Empty":
             return (
                 jsonify(
                     {
