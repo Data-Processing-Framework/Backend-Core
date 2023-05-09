@@ -1,7 +1,5 @@
 import os
-
 from flask import jsonify
-
 from app.helpers.controller import controller
 from app.helpers.file_locker import block_write
 
@@ -28,6 +26,7 @@ def update(request):
         singleton = controller()
 
         validate_json(data)
+
 
         if os.path.getsize("./app/data/graph.json") == 0:
             raise Exception("File Empty")

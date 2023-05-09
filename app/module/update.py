@@ -19,6 +19,19 @@ def validate_json(json_data):
         if field not in json_data:
             raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
+required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+
+
+class MissingFieldException(Exception):
+    pass
+
+
+def validate_json(json_data):
+
+    for field in required_fields:
+        if field not in json_data:
+            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
+
 
 def update(request, name):
     try:
@@ -26,6 +39,9 @@ def update(request, name):
         singleton = controller()
 
         validate_json(data)
+
+        if "modules.json" not in os.listdir("./app/data/"):
+            raise Exception("File does not exist")
 
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
