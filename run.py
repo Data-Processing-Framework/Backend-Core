@@ -7,10 +7,17 @@ if not os.path.exists("./app/data/modules"):
     os.makedirs("./app/data/modules")
 if not os.path.exists("./app/data/modules.json"):
     with open("./app/data/modules.json", "a+") as f:
-        f.write("{}")
+        f.write("[]")
 if not os.path.exists("./app/data/graph.json"):
     with open("./app/data/graph.json", "a+") as f:
-        f.write("{}")
+        f.write("[]")
+
+if os.path.getsize("./app/data/modules.json") == 0:
+    with open("./app/data/modules.json", "a+") as f:
+        f.write("[]")
+if os.path.getsize("./app/data/graph.json") == 0:
+    with open("./app/data/graph.json", "a+") as f:
+        f.write("[]")
 
 load_dotenv()
 

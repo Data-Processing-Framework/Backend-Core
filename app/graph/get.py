@@ -1,16 +1,15 @@
 from flask import jsonify
 import json
 import os
-
+from app.helpers.file_locker import block_read
 
 def get(request):
     try:
-        if "graph.json" not in os.listdir("./app/data/"):
-            raise Exception("File does not exist")
+        if os.path.getsize("./app/data/graph.json") != 0:
+            graph = block_read("./app/data/graph.json")
+            return jsonify(graph), 200
         else:
-            with open("./app/data/graph.json", "r") as graph_file:
-                graph = json.load(graph_file)
-                return jsonify(graph), 200
+            raise Exception("File Empty")
     except Exception as e:
-        return jsonify({"errors": [{"error": "Core error", "message": str(e), "detail": "Graph does not exist, try adding a node"}], "code": 400}), 400
+        return jsonify({"errors": [{"error": "Core error", "message": str(e), "detail": "Graph does not have nodes, try adding a node"}], "code": 400}), 400
     

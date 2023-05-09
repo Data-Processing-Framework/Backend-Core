@@ -1,33 +1,30 @@
-from flask import jsonify
-from app.helpers.controller import controller
-import json
 import os
 
+from flask import jsonify
 
-def delete(requests, name):
+from app.helpers.controller import controller
+from app.helpers.file_locker import block_read, block_write, block_delete
+
+
+def delete(request, name):
 
     try:
         singleton = controller()
-        if "modules.json" not in os.listdir("./app/data/"):
-            raise Exception("File does not exist")
 
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
 
-        with open("./app/data/modules.json", "r") as module_file:
-            modules = json.load(module_file)
+        modules = block_read("./app/data/modules.json")
+        for module in modules:
+            if module["name"] == name:
+                modules.remove(module)
+                block_write("./app/data/modules.json", modules)
+                break
 
-            for module in modules:
-                if module["name"] == name:
-                    modules.remove(module)
-                    with open("./app/data/modules.json", "w") as module_file:
-                        json.dump(modules, module_file)
-                    break
-
-            if name + ".py" in os.listdir("./app/data/modules"):
-                os.remove("./app/data/modules/" + name + ".py")
-            else:
-                raise Exception("Module does not exist")
+        if name + ".py" in os.listdir("./app/data/modules"):
+            block_delete("./app/data/modules/" + name + ".py")
+        else:
+            raise Exception("Module does not exist")
 
         message = singleton.send_message("RESTART")
 
@@ -36,23 +33,7 @@ def delete(requests, name):
         else:
             return jsonify(message), 400
     except Exception as e:
-        if str(e) == "File does not exist":
-            return (
-                jsonify(
-                    {
-                        "errors": [
-                            {
-                                "error": "Core error",
-                                "message": str(e),
-                                "detail": "Please check the file name and location and try again.",
-                            }
-                        ],
-                        "code": 400,
-                    }
-                ),
-                400,
-            )
-        elif str(e) == "File Empty":
+        if str(e) == "File Empty":
             return (
                 jsonify(
                     {

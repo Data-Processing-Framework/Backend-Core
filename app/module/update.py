@@ -1,7 +1,23 @@
-from flask import jsonify
-from app.helpers.controller import controller
-import json
 import os
+
+from flask import jsonify
+
+from app.helpers.controller import controller
+from app.helpers.file_locker import block_read, block_write, block_delete, block_write_file
+
+
+required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+
+
+class MissingFieldException(Exception):
+    pass
+
+
+def validate_json(json_data):
+
+    for field in required_fields:
+        if field not in json_data:
+            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
 required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
 
@@ -20,7 +36,6 @@ def validate_json(json_data):
 def update(request, name):
     try:
         data = request.get_json()
-
         singleton = controller()
 
         validate_json(data)
@@ -31,30 +46,24 @@ def update(request, name):
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
 
-        with open("./app/data/modules.json", "r") as module_file:
-            modules = json.load(module_file)
+        modules = block_read("./app/data/modules.json")
 
-            index = None
-            for i, mod in enumerate(modules):
-                if mod["name"] == name:
-                    index = i
-                    if name + ".py" in os.listdir("./app/data/modules"):
-                        os.remove("./app/data/modules/" + name + ".py")
-                        with open(
-                            "./app/data/modules/" + data["name"] + ".py", "w"
-                        ) as file:
-                            file.write(data["code"])
-                    else:
-                        raise Exception("Module does not exist")
-                    break
+        index = None
+        for i, mod in enumerate(modules):
+            if mod["name"] == name:
+                index = i
+                if name + ".py" in os.listdir("./app/data/modules"):
+                    block_delete("./app/data/modules/" + name + ".py")
+                    block_write_file("./app/data/modules/" + data["name"] + ".py", data["code"])
+                else:
+                    raise Exception("Module does not exist")
+                break
+        if index is not None:
+            modules[index] = data
+        else:
+            raise Exception("Module does not exist")
 
-            if index is not None:
-                modules[index] = data
-            else:
-                raise Exception("Module does not exist")
-
-            with open("./app/data/modules.json", "w") as module_file:
-                json.dump(modules, module_file)
+        block_write("./app/data/modules.json", modules)
 
         message = singleton.send_message("RESTART")
 

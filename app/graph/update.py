@@ -1,7 +1,7 @@
-from app.helpers.controller import controller
-from flask import jsonify
-import json
 import os
+from flask import jsonify
+from app.helpers.controller import controller
+from app.helpers.file_locker import block_write
 
 required_fields = ["name", "type", "module", "inputs", "position"]
 
@@ -27,14 +27,11 @@ def update(request):
 
         validate_json(data)
 
-        if "graph.json" not in os.listdir("./app/data/"):
-            raise Exception("File does not exist")
 
         if os.path.getsize("./app/data/graph.json") == 0:
             raise Exception("File Empty")
 
-        with open("./app/data/graph.json", "w") as graph_file:
-            json.dump(data, graph_file)
+        block_write("./app/data/graph.json", data)
 
         message = singleton.send_message("RESTART")
 

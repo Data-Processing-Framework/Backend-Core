@@ -1,7 +1,22 @@
-import json
 import os
+
 from flask import jsonify
+
 from app.helpers.controller import controller
+from app.helpers.file_locker import block_read, block_write, block_write_file
+
+required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+
+
+class MissingFieldException(Exception):
+    pass
+
+
+def validate_json(json_data):
+
+    for field in required_fields:
+        if field not in json_data:
+            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
 required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
 
@@ -19,24 +34,21 @@ def validate_json(json_data):
 
 def create(request):
 
-    # Get the request json data and create a singleton instance of the controller
-    request_json = request.get_json()
-    singleton = controller()
-
     try:
+        # Get the request json data and create a singleton instance of the controller
+        request_json = request.get_json()
+        singleton = controller()
+
         validate_json(request_json)
-        # If the modules.json file does not exist, raise an exception
-        if "modules.json" not in os.listdir("./app/data/"):
-            with open("./app/data/modules.json", "w") as f:
-                json.dump([], f)
         # Check if the modules.json file is empty
         if os.path.getsize("./app/data/modules.json") == 0:
-            with open("./app/data/modules.json", "w") as f:
-                json.dump([request_json], f)
+            print("Modules file is empty")
+            block_write("./app/data/modules.json", [request_json])
         else:
-            with open("./app/data/modules.json", "r") as f:
-                modules = json.load(f)
-
+            # Get all the modules from the modules.json file
+            print("Modules file is not empty")
+            modules = block_read("./app/data/modules.json")
+            print(modules)
             # Check if the module already exists in the modules.json file
             for m in modules:
                 if m["name"] == request_json["name"]:
@@ -44,13 +56,11 @@ def create(request):
 
             # Add the module to the modules.json file and create a new file for the code of the module.
             modules.append(request_json)
-            with open("./app/data/modules.json", "w") as f:
-                json.dump(modules, f)
-        # Create a new file for the code of the module.
-        # If the python file for some unknown reason already exists, it will be overwritten.
-        with open("./app/data/modules/" + request_json["name"] + ".py", "w") as f:
-            f.write(request_json["code"])
+            block_write("./app/data/modules.json", modules)
 
+        # Create a new file (or overwrite) for the code of the module.
+        block_write_file("./app/data/modules/" + request_json["name"] + ".py", request_json["code"])
+        
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
         if message["code"] == 200:

@@ -1,6 +1,6 @@
-from app.module import bp, create, delete, get, update
 from flask import request
 
+from app.module import bp, create, delete, get, update
 
 @bp.route("/", methods=["POST"])
 def create_route():
