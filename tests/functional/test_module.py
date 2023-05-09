@@ -15,7 +15,7 @@ import time
      [200, True])
 ])
 def test_module_post(client, json, file_name, expected):
-    time.sleep(3)
+    time.sleep(5)
     response = client.post("/module/", json=json)
     # time.sleep(2)
     print(response.status_code)
@@ -48,7 +48,7 @@ def test_module_post(client, json, file_name, expected):
 def test_module_delete(client, route, json, file_name, path, expected, extra):
     if extra:
         remove_size("modules.json")
-    time.sleep(3)
+    time.sleep(5)
     response = client.delete(route, json=json)
     assert response.status_code == expected[0] # Provisional 400 -> 200
     assert file_exists(file_name, path) == expected[1]
@@ -84,7 +84,7 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
 def test_module_put(client, route, json, file_name, path, expected, error, extra):
     if extra:
         remove_size("modules.json")
-    time.sleep(3)
+    time.sleep(5)
     response = client.put(route, json=json)
     assert response.status_code == expected[0] # Provisional 400 -> 200
     assert file_exists(file_name, path) == expected[1]
@@ -93,7 +93,7 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 
     if extra:
         return_size("modules.json")
-    time.sleep(2)
+    time.sleep(5)
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [
@@ -119,7 +119,7 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 def test_module_get(client, route, json, file_name, path, expected, error, extra):
     if extra:
         remove_size("modules.json")
-    time.sleep(3)
+    time.sleep(5)
     response = client.get(route)
     assert response.status_code == expected[0] # Provisional 400 -> 200
     assert file_exists(file_name, path) == expected[1]
@@ -130,4 +130,4 @@ def test_module_get(client, route, json, file_name, path, expected, error, extra
 
     if extra:
         return_size("modules.json")
-    time.sleep(2)
+    time.sleep(5)
