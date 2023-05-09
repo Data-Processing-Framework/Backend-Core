@@ -2,6 +2,7 @@ import pytest
 
 from app import create_app
 from dotenv import load_dotenv
+from app.helpers.controller import controller
 
 load_dotenv()
 
@@ -9,6 +10,7 @@ load_dotenv()
 @pytest.fixture()
 def app():
     app = create_app()
+    controller()
     app.config.update({
         "TESTING": True,
     })
