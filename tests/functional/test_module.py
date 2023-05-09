@@ -88,7 +88,7 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
      [400, True, "File Empty"], 
      False, True),
     ('/module/prova',
-     {"name": "prova", "type": "Input", "description": "Text Input module", "type_in": ["str","JSON"], "type_out": ["str"], "code": "class Module():\n    def __init__(self):\n       pass"},
+     {"name": "prova", "type": "Input", "type_in": ["str","JSON"], "type_out": ["str"], "code": "class Module():\n    def __init__(self):\n       pass"},
      "prova.py",
      "./app/data/modules/",
      [400, False, "The field 'description' is missing from the JSON"],

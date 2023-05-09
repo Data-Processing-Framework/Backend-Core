@@ -40,9 +40,6 @@ def update(request, name):
 
         validate_json(data)
 
-        if "modules.json" not in os.listdir("./app/data/"):
-            raise Exception("File does not exist")
-
         if os.path.getsize("./app/data/modules.json") == 0:
             raise Exception("File Empty")
 
