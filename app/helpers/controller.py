@@ -1,6 +1,7 @@
 from threading import Lock, Thread
 import zmq
 import os
+import json
 
 
 class controllerMeta(type):
@@ -60,13 +61,18 @@ class controller(metaclass=controllerMeta):
         poller = zmq.Poller()
         poller.register(self.response, zmq.POLLIN)
         errors = []
+        response = []
         while n_workers > 0:
             try:
                 socket = dict(poller.poll(timeout=10000))
                 if self.response in socket:
                     res = self.response.recv_string()
-                    if res != "OK":
-                        errors.append(res)
+                    if res != "OK" and message != "STATUS":
+                        errors.append(json.loads(res))
+                    if message == "STATUS" and "status" in res:
+                        response.append(json.loads(res))
+                    elif message == "STATUS":
+                        errors.append(json.loads(res))
                     n_workers -= 1
                 if socket == {}:
                     n_workers = 0
@@ -90,8 +96,11 @@ class controller(metaclass=controllerMeta):
                         "code": 400,
                     }
                 )
+
         if errors:
             return {"errors": errors, "code": 400}
+        elif response:
+            return {"response": response, "code": 200}
         else:
             return {"code": 200}
 
