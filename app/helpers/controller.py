@@ -1,6 +1,7 @@
 from threading import Lock, Thread
 import zmq
 import os
+import json
 
 
 class controllerMeta(type):
@@ -67,11 +68,11 @@ class controller(metaclass=controllerMeta):
                 if self.response in socket:
                     res = self.response.recv_string()
                     if res != "OK" and message != "STATUS":
-                        errors.append(res)
+                        errors.append(json.load(res))
                     if message == "STATUS" and "status" in res:
-                        response.append(res)
+                        response.append(json.load(res))
                     elif message == "STATUS":
-                        errors.append(res)
+                        errors.append(json.load(res))
                     n_workers -= 1
                 if socket == {}:
                     n_workers = 0
