@@ -68,11 +68,11 @@ class controller(metaclass=controllerMeta):
                 if self.response in socket:
                     res = self.response.recv_string()
                     if res != "OK" and message != "STATUS":
-                        errors.append(json.load(res))
+                        errors.append(json.loads(res))
                     if message == "STATUS" and "status" in res:
-                        response.append(json.load(res))
+                        response.append(json.loads(res))
                     elif message == "STATUS":
-                        errors.append(json.load(res))
+                        errors.append(json.loads(res))
                     n_workers -= 1
                 if socket == {}:
                     n_workers = 0
