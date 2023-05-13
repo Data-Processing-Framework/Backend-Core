@@ -60,12 +60,17 @@ class controller(metaclass=controllerMeta):
         poller = zmq.Poller()
         poller.register(self.response, zmq.POLLIN)
         errors = []
+        response = []
         while n_workers > 0:
             try:
                 socket = dict(poller.poll(timeout=10000))
                 if self.response in socket:
                     res = self.response.recv_string()
-                    if res != "OK":
+                    if res != "OK" and message != "RESTART":
+                        errors.append(res)
+                    if message == "RESTART" and "status" in res:
+                        response.append(res)
+                    elif message == "RESTART":
                         errors.append(res)
                     n_workers -= 1
                 if socket == {}:
@@ -90,8 +95,11 @@ class controller(metaclass=controllerMeta):
                         "code": 400,
                     }
                 )
+
         if errors:
             return {"errors": errors, "code": 400}
+        elif response:
+            return {"response": response, "code": 200}
         else:
             return {"code": 200}
 
