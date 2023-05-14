@@ -22,7 +22,10 @@ def test_validate(client):
 
     while True:
         status_res = client.get('/system/status')
-        status = status_res.json()["response"][0]["status"]
+        while "response" not in list(status_res.json.keys()):
+            status_res = client.get('/system/status')
+            time.sleep(1)
+        status = status_res.json["response"][0]["status"]
         if status != "RESTARTING":
             break
         time.sleep(1)
