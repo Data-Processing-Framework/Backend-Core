@@ -27,7 +27,7 @@ def test_system_restart(client):
 
 
 def test_system_stop(client):
-    time.sleep(5)
+    time.sleep(15)
     response = client.get('/system/stop')
     res = client.get('/system/status')
     assert response.status_code == 200
@@ -36,7 +36,7 @@ def test_system_stop(client):
 
 
 def test_system_start(client):
-    time.sleep(5)
+    time.sleep(15)
     response = client.get('/system/start')
     res = client.get('/system/status')
     assert response.status_code == 200

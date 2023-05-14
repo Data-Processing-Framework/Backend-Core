@@ -19,10 +19,3 @@ def return_size(file_name):
     os.popen(f"cp ./app/data/provisional.json ./app/data/{file_name}")
     time.sleep(3)
     os.remove("./app/data/provisional.json")
-
-
-def modify_file(path, data, type):
-    if type == "JSON":
-        block_write(path, data)
-    else:
-        block_write_file(path, data)
