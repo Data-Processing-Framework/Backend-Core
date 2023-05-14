@@ -51,3 +51,5 @@ def test_graph_get(client, code, value):
 
     if value:
         return_size("graph.json")
+
+    time.sleep(5)

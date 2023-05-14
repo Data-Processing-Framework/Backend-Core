@@ -19,6 +19,11 @@ import time
 ])
 def test_module_post(client, json, file_name, expected):
     time.sleep(5)
+    res = client.get('/system/status')
+
+    while res.json["response"][0]["status"] != "RUNNING":
+        time.sleep(1)
+        res = client.get('/system/status')
     
     response = client.post("/module/", json=json)
 
@@ -32,6 +37,8 @@ def test_module_post(client, json, file_name, expected):
     while res.json["response"][0]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
+
+    time.sleep(5)
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, extra",  [
@@ -166,3 +173,5 @@ def test_module_get(client, route, json, file_name, path, expected, error, extra
 
     if extra:
         return_size("modules.json")
+
+    time.sleep(5)
