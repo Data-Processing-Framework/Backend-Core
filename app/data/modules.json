@@ -1,1 +1,44 @@
-[{"name": "MYSQLInput", "type": "Input", "code": "class Module():..."}, {"name": "MYSQLOutput", "type": "Output", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "MYSQLOutput2", "type": "Output", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "MYSQLOutput4", "type": "Output", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "Postgres", "type": "input", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "Julio", "type": "input", "module": "a"}, {"name": "dummyTransform", "type": "Transform", "code": "def process_item(message):\n    print(message)\n    return message", "description": "Dummy module", "type_in": ["str"], "type_out": ["str"]}]
+[
+    {
+        "name": "MYSQLInput",
+        "type": "Input",
+        "code": "class Module():..."
+    },
+    {
+        "name": "MYSQLOutput",
+        "type": "Output",
+        "code": "class Module():\n    def __init__(self):\n       pass"
+    },
+    {
+        "name": "MYSQLOutput2",
+        "type": "Output",
+        "code": "class Module():\n    def __init__(self):\n       pass"
+    },
+    {
+        "name": "MYSQLOutput4",
+        "type": "Output",
+        "code": "class Module():\n    def __init__(self):\n       pass"
+    },
+    {
+        "name": "Postgres",
+        "type": "input",
+        "code": "class Module():\n    def __init__(self):\n       pass"
+    },
+    {
+        "name": "Julio",
+        "type": "input",
+        "module": "a"
+    },
+    {
+        "name": "dummyTransform",
+        "type": "Transform",
+        "code": "def process_item(message):\n    print(message)\n    return message",
+        "description": "Dummy module",
+        "type_in": [
+            "str"
+        ],
+        "type_out": [
+            "str"
+        ]
+    }
+]

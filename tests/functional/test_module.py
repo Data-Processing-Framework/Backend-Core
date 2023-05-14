@@ -28,13 +28,21 @@ def test_module_post(client, json, file_name, expected):
     if len(expected) > 2:
         assert response.json["errors"][0]["message"] == expected[2]
 
-    time.sleep(5)
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, extra",  [
     ('/module/prova',
      {"name": "prova", "type": "Input", "description": "Text Input module", "type_in": ["str","JSON"], "type_out": ["str"], "code": "class Module():\n    def __init__(self):\n       pass"},
      "prova.py",
+     "./app/data/modules/",
+     [200, False], False),
+    ('/module/prova2',
+     {"name": "prova2", "type": "Input", "description": "Text Input module", "type_in": ["str","JSON"], "type_out": ["str"], "code": "class Module():\n    def __init__(self):\n       pass"},
+     "prova2.py",
      "./app/data/modules/",
      [200, False], False),
     ('/module/dale',
@@ -65,7 +73,10 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
     if extra:
         return_size("modules.json")
 
-    time.sleep(5)
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [
@@ -111,7 +122,10 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
     if extra:
         return_size("modules.json")
 
-    time.sleep(5)
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [
@@ -152,5 +166,3 @@ def test_module_get(client, route, json, file_name, path, expected, error, extra
 
     if extra:
         return_size("modules.json")
-
-    time.sleep(5)

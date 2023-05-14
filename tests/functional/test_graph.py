@@ -30,7 +30,10 @@ def test_graph_put(client, code, json, value, error):
     if value:
         return_size("graph.json")
 
-    time.sleep(5)
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
 
 @pytest.mark.parametrize("code, value",  [
     (200, False),
@@ -48,5 +51,3 @@ def test_graph_get(client, code, value):
 
     if value:
         return_size("graph.json")
-        
-    time.sleep(5)
