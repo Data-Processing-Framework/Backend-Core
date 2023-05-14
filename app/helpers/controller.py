@@ -84,6 +84,7 @@ class controller(metaclass=controllerMeta):
                         }
                     )
             except zmq.ZMQError as e:
+                n_workers -= 1
                 errors.append(
                     {
                         "errors": [
@@ -96,6 +97,7 @@ class controller(metaclass=controllerMeta):
                         "code": 400,
                     }
                 )
+                continue
 
         if errors:
             return {"errors": errors, "code": 400}
