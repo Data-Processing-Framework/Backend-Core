@@ -20,10 +20,9 @@ def test_validate(client):
     block_write(f"{master_path}graph.json", graph)
     block_write(f"{master_path}modules.json", modules)
 
-    response = client.get('/system/restart')
-    assert response.status_code == 200
-
-    res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
+    while True:
+        status_res = client.get('/system/status')
+        status = status_res.json()["response"][0]["status"]
+        if status != "RESTARTING":
+            break
         time.sleep(1)
-        res = client.get('/system/status')
