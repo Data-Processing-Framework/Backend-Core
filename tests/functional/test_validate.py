@@ -3,7 +3,7 @@ import pytest
 import time
 
 
-def test_validate():
+def test_validate(client):
     master_path = "./app/data/"
 
     graph = [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
@@ -11,3 +11,11 @@ def test_validate():
 
     modify_file(f"{master_path}graph.json", graph, "JSON")
     modify_file(f"{master_path}modules.json", modules, "JSON")
+
+    response = client.get('/system/restart')
+    assert response.status_code == 200
+
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
