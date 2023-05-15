@@ -403,3 +403,143 @@ def test_module_get_locks(client, json):
         res = client.get('/system/status')
     
     time.sleep(5)
+
+
+@pytest.mark.parametrize("json",  [
+    ({
+        "data": [
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}],
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
+        ],
+        "responses": {
+            "thread1": [200],
+            "thread2": [200]
+        }
+    }),
+    ({
+        "data": [
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}],
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
+        ],
+        "responses": {
+            "thread1": [400, "File Empty"],
+            "thread2": [400, "File Empty"]
+        },
+        "extra": {}
+    })
+])
+def test_graph_get_locks(client, json):
+    if "extra" in list(json.keys()):
+        remove_size("graph.json")
+    
+    time.sleep(5)
+
+    urls = ["/graph/", "/graph/"]
+
+    thread1 = RequestThread(urls[0], json["data"][0], client, "GET")
+    thread2 = RequestThread(urls[1], json["data"][1], client, "GET")
+
+    time.sleep(5)
+    
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+    print(thread1.response.status_code)
+    print(thread2.response.status_code)
+
+    assert thread1.response.status_code == json["responses"]["thread1"][0]
+    assert thread2.response.status_code == json["responses"]["thread2"][0]
+
+    if len(json["responses"]["thread1"]) > 2:
+         assert thread1.response.json["errors"][0]["message"] == json["responses"]["thread1"][2]
+
+    if len(json["responses"]["thread2"]) > 2:
+         assert thread1.response.json["errors"][0]["message"] == json["responses"]["thread2"][2]
+
+    if "extra" in list(json.keys()):
+        return_size("graph.json")
+    
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
+    
+    time.sleep(5)
+
+
+@pytest.mark.parametrize("json",  [
+    ({
+        "data": [
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}],
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
+        ],
+        "responses": {
+            "thread1": [200],
+            "thread2": [200]
+        }
+    }),
+    ({
+        "data": [
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}],
+            [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
+        ],
+        "responses": {
+            "thread1": [400, "File Empty"],
+            "thread2": [400, "File Empty"]
+        },
+        "extra": {}
+    }),
+    ({
+        "data": [
+            [{"name": "Input1", "type": "Input", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}],
+            [{"name": "Input1", "type": "Input", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
+        ],
+        "responses": {
+            "thread1": [400, "The field 'module' is missing from the JSON"],
+            "thread2": [400, "The field 'module' is missing from the JSON"]
+        }
+    })
+])
+def test_graph_put_locks(client, json):
+    if "extra" in list(json.keys()):
+        remove_size("graph.json")
+    
+    time.sleep(5)
+
+    urls = ["/graph/", "/graph/"]
+
+    thread1 = RequestThread(urls[0], json["data"][0], client, "PUT")
+    thread2 = RequestThread(urls[1], json["data"][1], client, "PUT")
+
+    time.sleep(5)
+    
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+    print(thread1.response.status_code)
+    print(thread2.response.status_code)
+
+    assert thread1.response.status_code == json["responses"]["thread1"][0]
+    assert thread2.response.status_code == json["responses"]["thread2"][0]
+
+    if len(json["responses"]["thread1"]) > 2:
+         assert thread1.response.json["errors"][0]["message"] == json["responses"]["thread1"][2]
+
+    if len(json["responses"]["thread2"]) > 2:
+         assert thread1.response.json["errors"][0]["message"] == json["responses"]["thread2"][2]
+
+    if "extra" in list(json.keys()):
+        return_size("graph.json")
+    
+    res = client.get('/system/status')
+    while res.json["response"][0]["status"] == "RESTARTING":
+        time.sleep(1)
+        res = client.get('/system/status')
+    
+    time.sleep(5)

@@ -31,7 +31,15 @@ def test_system_stop(client):
     response = client.get('/system/stop')
     res = client.get('/system/status')
     assert response.status_code == 200
-    assert res.json["response"][0]["status"] == "STOPPED"
+
+    while True:
+        status_res = client.get('/system/status')
+        while "response" not in list(status_res.json.keys()):
+            status_res = client.get('/system/status')
+            time.sleep(1)
+        status = status_res.json["response"][0]["status"]
+        if status == "STOPPED":
+            break
     time.sleep(15)
 
 
