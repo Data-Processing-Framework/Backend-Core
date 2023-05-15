@@ -29,7 +29,7 @@ def test_system_restart(client):
 def test_system_stop(client):
     time.sleep(15)
     response = client.get('/system/stop')
-    res = client.get('/system/status')
+    
     assert response.status_code == 200
 
     while True:
@@ -38,15 +38,26 @@ def test_system_stop(client):
             status_res = client.get('/system/status')
             time.sleep(1)
         status = status_res.json["response"][0]["status"]
-        if status == "STOPPED":
+        if status != "STOPPING":
             break
+
+    assert status == "STOPPED"
     time.sleep(15)
 
 
 def test_system_start(client):
     time.sleep(15)
     response = client.get('/system/start')
-    res = client.get('/system/status')
-    assert response.status_code == 200
-    assert res.json["response"][0]["status"] == "RUNNING"
+
+    while True:
+        status_res = client.get('/system/status')
+        while "response" not in list(status_res.json.keys()):
+            status_res = client.get('/system/status')
+            time.sleep(1)
+        status = status_res.json["response"][0]["status"]
+        if status != "STOPPING":
+            break
+
+    assert status == "RUNNING"
+    assert status_res.status_code == 200
     time.sleep(15)

@@ -62,11 +62,16 @@ class controller(metaclass=controllerMeta):
         poller.register(self.response, zmq.POLLIN)
         errors = []
         response = []
+        isRunningError = False
         while n_workers > 0:
             try:
                 socket = dict(poller.poll(timeout=10000))
                 if self.response in socket:
                     res = self.response.recv_string()
+                    if res == "System is running":
+                        isRunningError = True
+                        n_workers -= 1
+                        continue
                     if res != "OK" and message != "STATUS":
                         errors.append(json.loads(res))
                     if message == "STATUS" and "status" in res:
@@ -84,6 +89,7 @@ class controller(metaclass=controllerMeta):
                         }
                     )
             except zmq.ZMQError as e:
+                n_workers -= 1
                 errors.append(
                     {
                         "errors": [
@@ -96,7 +102,10 @@ class controller(metaclass=controllerMeta):
                         "code": 400,
                     }
                 )
+                continue
 
+        if isRunningError:
+            raise Exception("System is running")
         if errors:
             return {"errors": errors, "code": 400}
         elif response:

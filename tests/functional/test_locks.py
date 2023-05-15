@@ -22,7 +22,6 @@ class RequestThread(threading.Thread):
         elif self.option == "GET":
             self.response = self.client.get(self.url)
 
-
         while True:
             status_res = self.client.get('/system/status')
             while "response" not in list(status_res.json.keys()):
@@ -94,11 +93,6 @@ def test_module_post_locks(client, json):
 
     thread1.join()
     thread2.join()
-
-    print(thread1.response.status_code)
-    print(thread2.response.status_code)
-    print(file_exists(json["file_names"][0], "./app/data/modules/"))
-    print(file_exists(json["file_names"][1], "./app/data/modules/"))
 
     assert thread1.response.status_code == json["responses"]["thread1"][0]
     assert thread2.response.status_code == json["responses"]["thread2"][0]
@@ -178,11 +172,6 @@ def test_module_delete_locks(client, json):
 
     thread1.join()
     thread2.join()
-
-    print(thread1.response.status_code)
-    print(thread2.response.status_code)
-    print(file_exists(json["file_names"][0], "./app/data/modules/"))
-    print(file_exists(json["file_names"][1], "./app/data/modules/"))
 
     assert thread1.response.status_code == json["responses"]["thread1"][0]
     assert thread2.response.status_code == json["responses"]["thread2"][0]
@@ -285,11 +274,6 @@ def test_module_put_locks(client, json):
     thread1.join()
     thread2.join()
 
-    print(thread1.response.status_code)
-    print(thread2.response.status_code)
-    print(file_exists(json["file_names"][0], "./app/data/modules/"))
-    print(file_exists(json["file_names"][1], "./app/data/modules/"))
-
     assert thread1.response.status_code == json["responses"]["thread1"][0]
     assert thread2.response.status_code == json["responses"]["thread2"][0]
 
@@ -377,11 +361,6 @@ def test_module_get_locks(client, json):
     thread1.join()
     thread2.join()
 
-    print(thread1.response.status_code)
-    print(thread2.response.status_code)
-    print(file_exists(json["file_names"][0], "./app/data/modules/"))
-    print(file_exists(json["file_names"][1], "./app/data/modules/"))
-
     assert thread1.response.status_code == json["responses"]["thread1"][0]
     assert thread2.response.status_code == json["responses"]["thread2"][0]
 
@@ -446,9 +425,6 @@ def test_graph_get_locks(client, json):
 
     thread1.join()
     thread2.join()
-
-    print(thread1.response.status_code)
-    print(thread2.response.status_code)
 
     assert thread1.response.status_code == json["responses"]["thread1"][0]
     assert thread2.response.status_code == json["responses"]["thread2"][0]
@@ -521,9 +497,6 @@ def test_graph_put_locks(client, json):
 
     thread1.join()
     thread2.join()
-
-    print(thread1.response.status_code)
-    print(thread2.response.status_code)
 
     assert thread1.response.status_code == json["responses"]["thread1"][0]
     assert thread2.response.status_code == json["responses"]["thread2"][0]
