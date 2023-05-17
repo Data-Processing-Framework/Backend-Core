@@ -25,7 +25,7 @@ def test_module_post(client, json, file_name, expected):
         time.sleep(1)
         res = client.get('/system/status')
     
-    response = client.post("/module/", json=json)
+    response = client.post("/module", json=json)
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, "./app/data/modules/") == expected[1]

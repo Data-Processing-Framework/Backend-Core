@@ -20,7 +20,7 @@ def test_graph_put(client, code, json, value, error):
 
     time.sleep(5)
 
-    response = client.put("/graph/", json=json)
+    response = client.put("/graph", json=json)
 
     assert response.status_code == code
 
@@ -45,7 +45,7 @@ def test_graph_get(client, code, value):
 
     time.sleep(5)
 
-    response = client.get("/graph/")
+    response = client.get("/graph")
 
     assert response.status_code == code
 
