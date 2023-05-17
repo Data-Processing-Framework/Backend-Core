@@ -1,1 +1,18 @@
-[{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
+[
+    {
+        "name": "Input1",
+        "type": "Input",
+        "module": "dummyInput",
+        "inputs": [],
+        "position": []
+    },
+    {
+        "name": "Transform1",
+        "type": "Transform",
+        "module": "dummyTransform",
+        "inputs": [
+            "Input1"
+        ],
+        "position": []
+    }
+]
