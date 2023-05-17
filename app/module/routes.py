@@ -2,7 +2,7 @@ from flask import request
 
 from app.module import bp, create, delete, get, update
 
-@bp.route("/", methods=["POST"])
+@bp.route("", methods=["POST"])
 def create_route():
     return create.create(request)
 
@@ -17,7 +17,7 @@ def get_route(name):
     return get.get(request, name)
 
 
-@bp.route("/", methods=["GET"])
+@bp.route("", methods=["GET"])
 def get_route_all():
     return get.get(request, "")
 
