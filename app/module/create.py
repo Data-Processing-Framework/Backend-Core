@@ -36,6 +36,7 @@ def create(request):
 
     try:
         # Get the request json data and create a singleton instance of the controller
+        file = request.files['file'] 
         request_json = request.get_json()
         singleton = controller()
 
