@@ -3,22 +3,9 @@ import os
 from flask import jsonify
 
 from app.helpers.controller import controller
-from app.helpers.file_locker import block_read, block_write, block_write_file
+from app.helpers.file_locker import block_read, block_write
 
-required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
-
-
-class MissingFieldException(Exception):
-    pass
-
-
-def validate_json(json_data):
-
-    for field in required_fields:
-        if field not in json_data:
-            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
-
-required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+required_fields = ["name", "type", "description", "type_in", "type_out"]
 
 
 class MissingFieldException(Exception):
@@ -35,9 +22,14 @@ def validate_json(json_data):
 def create(request):
 
     try:
-        # Get the request json data and create a singleton instance of the controller
-        file = request.files['file'] 
-        request_json = request.get_json()
+        request_json = {}
+        # Get the request data and create a singleton instance of the controller
+        request_json["name"] = request.form.get("name")
+        request_json["type"] = request.form.get("type")
+        request_json["description"] = request.form.get("description")
+        request_json["type_in"] = request.form.get("type_in")
+        request_json["type_out"] = request.form.get("type_out")
+        code = request.files.get("code")
         singleton = controller()
 
         validate_json(request_json)
@@ -54,13 +46,16 @@ def create(request):
             for m in modules:
                 if m["name"] == request_json["name"]:
                     raise Exception("Module with the same name already exists")
+                
+            # Create a new file (or overwrite) for the code of the module.
+            if code:
+                code.save(f"./app/data/modules/{request_json['name']}.py")
+            else:
+                raise Exception("No code file (.py) uploaded.")
 
             # Add the module to the modules.json file and create a new file for the code of the module.
             modules.append(request_json)
             block_write("./app/data/modules.json", modules)
-
-        # Create a new file (or overwrite) for the code of the module.
-        block_write_file("./app/data/modules/" + request_json["name"] + ".py", request_json["code"])
         
         # Send a restart message to all the workers
         message = singleton.send_message("RESTART")
@@ -112,6 +107,22 @@ def create(request):
                                 "error": "Error Core",
                                 "message": str(e),
                                 "detail": "Try changing the name of the module",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
+        elif str(e) == "No code file (.py) uploaded.":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error Core",
+                                "message": str(e),
+                                "detail": "Try uploading file again",
                             }
                         ],
                         "code": 400,
