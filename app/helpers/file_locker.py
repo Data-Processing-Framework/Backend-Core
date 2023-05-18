@@ -10,6 +10,13 @@ def block_read(filename):
     fcntl.flock(actualfile.fileno(), fcntl.LOCK_UN)
     return modules
 
+def block_read_python_file(filename):
+    actualfile = open(filename, "r")
+    fcntl.flock(actualfile.fileno(), fcntl.LOCK_SH)
+    code = actualfile.read()
+    fcntl.flock(actualfile.fileno(), fcntl.LOCK_UN)
+    return code
+
 def block_write(filename, data):
     actualfile = open(filename, "w+")
     fcntl.flock(actualfile.fileno(), fcntl.LOCK_EX)

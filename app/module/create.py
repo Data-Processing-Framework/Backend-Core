@@ -3,7 +3,7 @@ import os
 from flask import jsonify
 
 from app.helpers.controller import controller
-from app.helpers.file_locker import block_read, block_write
+from app.helpers.file_locker import block_read, block_write, block_read_python_file
 
 required_fields = ["name", "type", "description", "type_in", "type_out"]
 
@@ -50,6 +50,10 @@ def create(request):
             # Create a new file (or overwrite) for the code of the module.
             if code:
                 code.save(f"./app/data/modules/{request_json['name']}.py")
+
+                raw_code = block_read_python_file(f"./app/data/modules/{request_json['name']}.py")
+
+                request_json["code"] = raw_code
             else:
                 raise Exception("No code file (.py) uploaded.")
 
