@@ -1,25 +1,10 @@
 import os
-
 from flask import jsonify
-
 from app.helpers.controller import controller
-from app.helpers.file_locker import block_read, block_write, block_delete, block_write_file
+from app.helpers.file_locker import *
 
 
-required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
-
-
-class MissingFieldException(Exception):
-    pass
-
-
-def validate_json(json_data):
-
-    for field in required_fields:
-        if field not in json_data:
-            raise MissingFieldException(f"The field '{field}' is missing from the JSON")
-
-required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+required_fields = ["name", "type", "description", "type_in", "type_out"]
 
 
 class MissingFieldException(Exception):
@@ -29,13 +14,20 @@ class MissingFieldException(Exception):
 def validate_json(json_data):
 
     for field in required_fields:
-        if field not in json_data:
+        if field not in json_data or json_data[field] == None:
             raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
 
 def update(request, name):
     try:
-        data = request.get_json()
+        data = {}
+
+        data["name"] = request.form.get("name")
+        data["type"] = request.form.get("type")
+        data["description"] = request.form.get("description")
+        data["type_in"] = request.form.get("type_in")
+        data["type_out"] = request.form.get("type_out")
+        code = request.files.get("code")
         singleton = controller()
 
         validate_json(data)
@@ -44,6 +36,15 @@ def update(request, name):
             raise Exception("File Empty")
 
         modules = block_read("./app/data/modules.json")
+
+        if code:
+            if f"{data['name']}.py" in os.listdir("./app/data/modules"):
+                raw_code = block_read_python_file(f"./app/data/modules/{data['name']}.py")
+                data["code"] = raw_code
+            else:
+                raise Exception("Module does not exist")
+        else:
+            raise Exception("No code file (.py) uploaded.")
 
         index = None
         for i, mod in enumerate(modules):
@@ -128,6 +129,22 @@ def update(request, name):
                                 "error": "Core error",
                                 "message": str(e),
                                 "detail": "Please check the module name and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
+        elif str(e) == "No code file (.py) uploaded.":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error Core",
+                                "message": str(e),
+                                "detail": "Try uploading file again",
                             }
                         ],
                         "code": 400,

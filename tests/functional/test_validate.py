@@ -6,6 +6,7 @@ import os
 
 
 def test_validate(client):
+    time.sleep(15)
     master_path = "./app/data/"
 
     if "prova.py" in os.listdir(f"{master_path}modules/"):
@@ -13,6 +14,9 @@ def test_validate(client):
 
     if "prova2.py" in os.listdir(f"{master_path}modules/"):
         block_delete(f"{master_path}modules/prova2.py")
+
+    if "provisional.json" in os.listdir(f"{master_path}"):
+        block_delete(f"{master_path}provisional.json")
 
     graph = [{"name": "Input1", "type": "Input", "module": "dummyInput", "inputs": [], "position": []}, {"name": "Transform1", "type": "Transform", "module": "dummyTransform", "inputs": ["Input1"], "position": []}]
     modules = [{"name": "MYSQLInput", "type": "Input", "code": "class Module():..."}, {"name": "MYSQLOutput", "type": "Output", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "MYSQLOutput2", "type": "Output", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "MYSQLOutput4", "type": "Output", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "Postgres", "type": "input", "code": "class Module():\n    def __init__(self):\n       pass"}, {"name": "Julio", "type": "input", "module": "a"}, {"name": "dummyTransform", "type": "Transform", "code": "def process_item(message):\n    print(message)\n    return message", "description": "Dummy module", "type_in": ["str"], "type_out": ["str"]}]
@@ -25,7 +29,7 @@ def test_validate(client):
         while "response" not in list(status_res.json.keys()):
             status_res = client.get('/system/status')
             time.sleep(1)
-        status = status_res.json["response"][0]["status"]
+        status = status_res.json["response"][str(list(status_res.json["response"].keys())[0])]["status"]
         if status != "RESTARTING":
             break
         time.sleep(1)

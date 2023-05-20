@@ -1,3 +1,6 @@
+from werkzeug.datastructures import FileStorage
+from werkzeug.test import EnvironBuilder
+from werkzeug.wrappers import Request
 from tests.functions import *
 import pytest
 import time
@@ -18,14 +21,17 @@ import time
      [400, True, "The field 'description' is missing from the JSON"]),
 ])
 def test_module_post(client, json, file_name, expected):
-    time.sleep(5)
+    time.sleep(15)
     res = client.get('/system/status')
 
-    while res.json["response"][0]["status"] != "RUNNING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] != "RUNNING":
         time.sleep(1)
         res = client.get('/system/status')
     
-    response = client.post("/module", json=json)
+    file = open(f"./tests/data/{file_name}", "rb")
+    json["code"] = (file, file_name)
+
+    response = client.post("/module", data=json, content_type="multipart/form-data")
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, "./app/data/modules/") == expected[1]
@@ -34,7 +40,7 @@ def test_module_post(client, json, file_name, expected):
         assert response.json["errors"][0]["message"] == expected[2]
 
     res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
 
@@ -81,7 +87,7 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
         return_size("modules.json")
 
     res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
 
@@ -118,7 +124,10 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 
     time.sleep(5)
 
-    response = client.put(route, json=json)
+    file = open(f"./tests/data/{file_name}", "rb")
+    json["code"] = (file, file_name)
+
+    response = client.put(route, data=json, content_type="multipart/form-data")
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, path) == expected[1]
@@ -130,14 +139,14 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
         return_size("modules.json")
 
     res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [
     ('/module/Julio',
-     {'code': 'class Module():\n    def __init__(self):\n       pass', 'description': 'Text Input module', 'name': 'Julio', 'type': 'Input', 'type_in': ['str', 'JSON'], 'type_out': ['str']},
+     {'code': 'class Module():\n    def __init__(self):\n       pass', 'description': 'Text Input module', 'name': 'Julio', 'type': 'Input', 'type_in': 'str', 'type_out': 'str'},
      "Julio.py",
      "./app/data/modules/",
      [200, True],
