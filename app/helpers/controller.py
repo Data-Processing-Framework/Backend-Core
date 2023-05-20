@@ -57,7 +57,7 @@ class controller(metaclass=controllerMeta):
     def status(self):
         poller = zmq.Poller()
         poller.register(self.status_bus, zmq.POLLIN)
-        self.system_status["proba"] = 0
+        self.request.send_string("STATUS")
         while True:
             try:
                 socket = dict(poller.poll(timeout=10000))
