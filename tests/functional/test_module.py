@@ -18,14 +18,16 @@ import time
      [400, True, "The field 'description' is missing from the JSON"]),
 ])
 def test_module_post(client, json, file_name, expected):
-    time.sleep(5)
-    res = client.get('/system/status')
+    # time.sleep(5)
+    # res = client.get('/system/status')
 
-    while res.json["response"][0]["status"] != "RUNNING":
-        time.sleep(1)
-        res = client.get('/system/status')
+    # while res.json["response"][0]["status"] != "RUNNING":
+    #     time.sleep(1)
+    #     res = client.get('/system/status')
     
-    response = client.post("/module", json=json)
+    # response = client.post("/module", json=json)
+    files = {"code": open(f"./tests/data/{file_name}", "rb")}
+    response = client.post("/module", data=json, files=file)
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, "./app/data/modules/") == expected[1]
@@ -118,7 +120,9 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 
     time.sleep(5)
 
-    response = client.put(route, json=json)
+    files = {"code": open(f"./tests/data/{file_name}", "rb")}
+    response = client.put("/module", data=json, files=file)
+    # response = client.put(route, json=json)
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, path) == expected[1]

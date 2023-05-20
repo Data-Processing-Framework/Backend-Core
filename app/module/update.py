@@ -6,7 +6,7 @@ from app.helpers.controller import controller
 from app.helpers.file_locker import block_read, block_write, block_delete, block_write_file
 
 
-required_fields = ["name", "type", "description", "type_in", "type_out", "code"]
+required_fields = ["name", "type", "description", "type_in", "type_out"]
 
 
 class MissingFieldException(Exception):
@@ -22,7 +22,13 @@ def validate_json(json_data):
 
 def update(request, name):
     try:
-        data = request.get_json()
+        # data = request.get_json()
+        data["name"] = request.form.get("name")
+        data["type"] = request.form.get("type")
+        data["description"] = request.form.get("description")
+        data["type_in"] = request.form.get("type_in")
+        data["type_out"] = request.form.get("type_out")
+        code = request.files.get("code")
         singleton = controller()
 
         validate_json(data)
@@ -31,6 +37,10 @@ def update(request, name):
             raise Exception("File Empty")
 
         modules = block_read("./app/data/modules.json")
+
+        if code:
+            raw_code = block_read_python_file(f"./app/data/modules/{request_json['name']}.py")
+            data["code"] = raw_code
 
         index = None
         for i, mod in enumerate(modules):
