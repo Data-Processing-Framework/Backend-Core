@@ -20,12 +20,12 @@ def test_validate(client):
     block_write(f"{master_path}graph.json", graph)
     block_write(f"{master_path}modules.json", modules)
 
-    # while True:
-    #     status_res = client.get('/system/status')
-    #     while "response" not in list(status_res.json.keys()):
-    #         status_res = client.get('/system/status')
-    #         time.sleep(1)
-    #     status = status_res.json["response"][0]["status"]
-    #     if status != "RESTARTING":
-    #         break
-    #     time.sleep(1)
+    while True:
+        status_res = client.get('/system/status')
+        while "response" not in list(status_res.json.keys()):
+            status_res = client.get('/system/status')
+            time.sleep(1)
+        status = status_res.json["response"]["worker-input"]["status"]
+        if status != "RESTARTING":
+            break
+        time.sleep(1)
