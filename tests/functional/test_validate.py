@@ -6,6 +6,7 @@ import os
 
 
 def test_validate(client):
+    time.sleep(15)
     master_path = "./app/data/"
 
     if "prova.py" in os.listdir(f"{master_path}modules/"):
@@ -25,7 +26,7 @@ def test_validate(client):
         while "response" not in list(status_res.json.keys()):
             status_res = client.get('/system/status')
             time.sleep(1)
-        status = status_res.json["response"]["worker-input"]["status"]
+        status = status_res.json["response"][str(list(status_res.json["response"].keys())[0])]["status"]
         if status != "RESTARTING":
             break
         time.sleep(1)

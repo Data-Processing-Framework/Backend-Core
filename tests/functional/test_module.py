@@ -1,3 +1,6 @@
+from werkzeug.datastructures import FileStorage
+from werkzeug.test import EnvironBuilder
+from werkzeug.wrappers import Request
 from tests.functions import *
 import pytest
 import time
@@ -21,13 +24,14 @@ def test_module_post(client, json, file_name, expected):
     time.sleep(15)
     res = client.get('/system/status')
 
-    while res.json["response"]["worker-input"]["status"] != "RUNNING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] != "RUNNING":
         time.sleep(1)
         res = client.get('/system/status')
     
-    # response = client.post("/module", json=json)
-    file = {"code": open(f"./tests/data/{file_name}", "rb")}
-    response = client.post("/module", data=json, files=file)
+    file = open(f"./tests/data/{file_name}", "rb")
+    json["code"] = (file, file_name)
+
+    response = client.post("/module", data=json, content_type="multipart/form-data")
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, "./app/data/modules/") == expected[1]
@@ -36,7 +40,7 @@ def test_module_post(client, json, file_name, expected):
         assert response.json["errors"][0]["message"] == expected[2]
 
     res = client.get('/system/status')
-    while res.json["response"]["worker-input"]["status"] == "RESTARTING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
 
@@ -83,7 +87,7 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
         return_size("modules.json")
 
     res = client.get('/system/status')
-    while res.json["response"]["worker-input"]["status"] == "RESTARTING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
 
@@ -120,9 +124,10 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 
     time.sleep(5)
 
-    files = {"code": open(f"./tests/data/{file_name}", "rb")}
-    response = client.put("/module", data=json, files=file)
-    # response = client.put(route, json=json)
+    file = open(f"./tests/data/{file_name}", "rb")
+    json["code"] = (file, file_name)
+
+    response = client.put(route, data=json, content_type="multipart/form-data")
 
     assert response.status_code == expected[0]
     assert file_exists(file_name, path) == expected[1]
@@ -134,7 +139,7 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
         return_size("modules.json")
 
     res = client.get('/system/status')
-    while res.json["response"]["worker-input"]["status"] == "RESTARTING":
+    while res.json["response"][str(list(res.json["response"].keys())[0])]["status"] == "RESTARTING":
         time.sleep(1)
         res = client.get('/system/status')
 
