@@ -146,7 +146,7 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [
     ('/module/Julio',
-     {'code': 'class Module():\n    def __init__(self):\n       pass', 'description': 'Text Input module', 'name': 'Julio', 'type': 'Input', 'type_in': ['str', 'JSON'], 'type_out': ['str']},
+     {'code': 'class Module():\n    def __init__(self):\n       pass', 'description': 'Text Input module', 'name': 'Julio', 'type': 'Input', 'type_in': 'str', 'type_out': 'str'},
      "Julio.py",
      "./app/data/modules/",
      [200, True],

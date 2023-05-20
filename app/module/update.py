@@ -38,8 +38,13 @@ def update(request, name):
         modules = block_read("./app/data/modules.json")
 
         if code:
-            raw_code = block_read_python_file(f"./app/data/modules/{data['name']}.py")
-            data["code"] = raw_code
+            if f"{data['name']}.py" in os.listdir("./app/data/modules"):
+                raw_code = block_read_python_file(f"./app/data/modules/{data['name']}.py")
+                data["code"] = raw_code
+            else:
+                raise Exception("Module does not exist")
+        else:
+            raise Exception("No code file (.py) uploaded.")
 
         index = None
         for i, mod in enumerate(modules):
@@ -124,6 +129,22 @@ def update(request, name):
                                 "error": "Core error",
                                 "message": str(e),
                                 "detail": "Please check the module name and try again.",
+                            }
+                        ],
+                        "code": 400,
+                    }
+                ),
+                400,
+            )
+        elif str(e) == "No code file (.py) uploaded.":
+            return (
+                jsonify(
+                    {
+                        "errors": [
+                            {
+                                "error": "Error Core",
+                                "message": str(e),
+                                "detail": "Try uploading file again",
                             }
                         ],
                         "code": 400,
