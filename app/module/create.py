@@ -1,7 +1,5 @@
 import os
-
 from flask import jsonify
-
 from app.helpers.controller import controller
 from app.helpers.file_locker import block_read, block_write, block_read_python_file
 
@@ -15,7 +13,7 @@ class MissingFieldException(Exception):
 def validate_json(json_data):
 
     for field in required_fields:
-        if field not in json_data:
+        if field not in json_data or json_data[field] == None:
             raise MissingFieldException(f"The field '{field}' is missing from the JSON")
 
 
