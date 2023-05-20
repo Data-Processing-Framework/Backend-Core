@@ -33,12 +33,12 @@ def test_module_post(client, json, file_name, expected):
     if len(expected) > 2:
         assert response.json["errors"][0]["message"] == expected[2]
 
-    res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
-        time.sleep(1)
-        res = client.get('/system/status')
+    # res = client.get('/system/status')
+    # while res.json["response"][0]["status"] == "RESTARTING":
+    #     time.sleep(1)
+    #     res = client.get('/system/status')
 
-    time.sleep(5)
+    # time.sleep(5)
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, extra",  [
@@ -80,10 +80,10 @@ def test_module_delete(client, route, json, file_name, path, expected, extra):
     if extra:
         return_size("modules.json")
 
-    res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
-        time.sleep(1)
-        res = client.get('/system/status')
+    # res = client.get('/system/status')
+    # while res.json["response"][0]["status"] == "RESTARTING":
+    #     time.sleep(1)
+    #     res = client.get('/system/status')
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [
@@ -129,10 +129,10 @@ def test_module_put(client, route, json, file_name, path, expected, error, extra
     if extra:
         return_size("modules.json")
 
-    res = client.get('/system/status')
-    while res.json["response"][0]["status"] == "RESTARTING":
-        time.sleep(1)
-        res = client.get('/system/status')
+    # res = client.get('/system/status')
+    # while res.json["response"][0]["status"] == "RESTARTING":
+    #     time.sleep(1)
+    #     res = client.get('/system/status')
 
 
 @pytest.mark.parametrize("route, json, file_name, path, expected, error, extra",  [

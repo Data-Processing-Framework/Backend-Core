@@ -22,15 +22,15 @@ class RequestThread(threading.Thread):
         elif self.option == "GET":
             self.response = self.client.get(self.url)
 
-        while True:
-            status_res = self.client.get('/system/status')
-            while "response" not in list(status_res.json.keys()):
-                status_res = self.client.get('/system/status')
-                time.sleep(1)
-            status = status_res.json["response"][0]["status"]
-            if status != "RESTARTING":
-                break
-        time.sleep(15)
+        # while True:
+        #     status_res = self.client.get('/system/status')
+        #     while "response" not in list(status_res.json.keys()):
+        #         status_res = self.client.get('/system/status')
+        #         time.sleep(1)
+        #     status = status_res.json["response"][0]["status"]
+        #     if status != "RESTARTING":
+        #         break
+        # time.sleep(15)
 
 
 @pytest.mark.parametrize("json",  [
