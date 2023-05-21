@@ -5,5 +5,5 @@ python-dotenv
 gevent
 flask-cors
 zmq
-mysql.connector
+mysql
 datetime
