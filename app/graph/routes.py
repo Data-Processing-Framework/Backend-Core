@@ -1,11 +1,12 @@
 from flask import request
 
-from app.graph import bp, create, get, update
+from app.graph import bp, logs, get, update
 
 
-@bp.route("/<name>", methods=["POST"])
+@bp.route("/logs/<name>", methods=["POST"])
 def create_route(name):
-    return create.create(request, name)
+    return logs.logs(request, name)
+
 
 @bp.route("/", methods=["GET"])
 def get_route():
