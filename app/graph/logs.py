@@ -24,7 +24,7 @@ def logs(request, name):
         if len(fromDate) and len(toDate) != 0:
 
             cursor.execute(
-                "SELECT created_at, log_levelname, type, name, created_by, log  FROM Workers WHERE name = %s AND created_at BETWEEN %s AND %s LIMIT %s ORDER BY created_at DESC",
+                "SELECT created_at, log_levelname, type, name, created_by, log  FROM Workers WHERE name = %s AND created_at BETWEEN %s AND %s ORDER BY created_at DESC LIMIT %s ",
                 [name, fromDate, toDate, return_items],
             )
             resultados = cursor.fetchall()
@@ -34,7 +34,7 @@ def logs(request, name):
 
         else:
             cursor.execute(
-                "SELECT created_at, log_levelname, type, name, created_by, log FROM Workers WHERE name = %s LIMIT %s ORDER BY created_at DESC",
+                "SELECT created_at, log_levelname, type, name, created_by, log FROM Workers WHERE name = %s ORDER BY created_at DESC LIMIT %s ",
                 [name, return_items],
             )
             resultados = cursor.fetchall()
