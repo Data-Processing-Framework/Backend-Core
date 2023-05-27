@@ -1,44 +1,18 @@
 [
     {
-        "name": "MYSQLInput",
+        "name": "Input",
         "type": "Input",
-        "code": "class Module():..."
+        "description": "Input module",
+        "type_in": "undefined",
+        "type_out": "[\"str\"]",
+        "code": "def process_item():\n    return \"dummy\"\n"
     },
     {
-        "name": "MYSQLOutput",
-        "type": "Output",
-        "code": "class Module():\n    def __init__(self):\n       pass"
-    },
-    {
-        "name": "MYSQLOutput2",
-        "type": "Output",
-        "code": "class Module():\n    def __init__(self):\n       pass"
-    },
-    {
-        "name": "MYSQLOutput4",
-        "type": "Output",
-        "code": "class Module():\n    def __init__(self):\n       pass"
-    },
-    {
-        "name": "Postgres",
-        "type": "input",
-        "code": "class Module():\n    def __init__(self):\n       pass"
-    },
-    {
-        "name": "Julio",
-        "type": "input",
-        "module": "a"
-    },
-    {
-        "name": "dummyTransform",
+        "name": "Transform",
         "type": "Transform",
-        "code": "def process_item(message):\n    print(message)\n    return message",
-        "description": "Dummy module",
-        "type_in": [
-            "str"
-        ],
-        "type_out": [
-            "str"
-        ]
+        "description": "Transform module",
+        "type_in": "[\"str\"]",
+        "type_out": "[\"str\"]",
+        "code": "process_item(message: str):\n    return message\n"
     }
 ]
