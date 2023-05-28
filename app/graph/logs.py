@@ -29,21 +29,19 @@ def logs(request, name):
             )
             resultados = cursor.fetchall()
 
-            for fila in resultados:
-                print(fila)
-
         else:
             cursor.execute(
                 "SELECT created_at, log_levelname, type, name, created_by, log FROM Workers WHERE name = %s ORDER BY created_at DESC LIMIT %s ",
                 [name, return_items],
             )
             resultados = cursor.fetchall()
-            r = "[created_at, log_levelname, type, name, created_by, log]\n"
+        
+        r = "[created_at, log_levelname, type, name, created_by, log]\n"
 
-            for fila in resultados:
-                fila = list(fila)
-                fila[0] = str(fila[0])
-                r += str(fila) + "\n"
+        for fila in resultados:
+            fila = list(fila)
+            fila[0] = str(fila[0])
+            r += str(fila) + "\n"
 
         cursor.close()
         conexion.close()
